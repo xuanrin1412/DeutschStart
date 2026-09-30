@@ -7,6 +7,8 @@ import { useToast } from '@/context/ToastContext';
 import { fullWord } from '@/services/quiz';
 import { SRS_LABELS, WORD_TYPE_LABELS } from '@/constants';
 import { AudioButton } from '@/components/ui/AudioButton';
+import { AutoSpeakSwitch } from '@/components/ui/AutoSpeakSwitch';
+import { useSpeakOnShow } from '@/hooks/useAutoSpeak';
 import { WordImage } from '@/components/ui/WordImage';
 import { GermanWord, Ipa } from '@/components/ui/GermanWord';
 
@@ -19,6 +21,7 @@ export function VocabCard({ word }: { word: Vocabulary }) {
   const uv = getWord(word.id);
   const topic = topicById.get(word.topicId);
   const text = fullWord(word);
+  useSpeakOnShow({ text, url: word.audio?.url }, word.id);
 
   return (
     <article className="vocab-card card">
@@ -32,6 +35,7 @@ export function VocabCard({ word }: { word: Vocabulary }) {
             <Ipa>{word.ipa}</Ipa>
             <AudioButton text={text} url={word.audio?.url} />
             <AudioButton text={text} url={word.audio?.url} slow />
+            <AutoSpeakSwitch />
           </div>
           <p className="vocab-meaning">{word.meaning}</p>
           <span className={`state-chip state-${uv.state}`}>{SRS_LABELS[uv.state]}</span>

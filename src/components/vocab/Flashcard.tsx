@@ -3,6 +3,7 @@ import type { Vocabulary } from '@/types/models';
 import type { Grade } from '@/services/srs';
 import { fullWord } from '@/services/quiz';
 import { audioService } from '@/services/audio/audioService';
+import { useSpeakOnShow } from '@/hooks/useAutoSpeak';
 import { AudioButton } from '@/components/ui/AudioButton';
 import { WordImage } from '@/components/ui/WordImage';
 import { GermanWord, Ipa } from '@/components/ui/GermanWord';
@@ -14,6 +15,7 @@ interface Props {
 
 export function Flashcard({ word, onGrade }: Props) {
   const [flipped, setFlipped] = useState(false);
+  useSpeakOnShow({ text: fullWord(word), url: word.audio?.url }, word.id);
 
   useEffect(() => {
     setFlipped(false);

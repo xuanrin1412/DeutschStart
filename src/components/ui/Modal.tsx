@@ -1,4 +1,5 @@
 import { useEffect, useRef, type ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 
 interface Props {
   open: boolean;
@@ -7,7 +8,10 @@ interface Props {
   children: ReactNode;
 }
 
-/** Accessible dialog: Esc closes, focus moves in and returns to the trigger. */
+/**
+ * Accessible dialog: Esc closes, focus moves in and returns to the trigger.
+ * Rendered into <body> so page layout rules (e.g. the .stack-* margins) cannot shift the full-screen backdrop.
+ */
 export function Modal({ open, onClose, title, children }: Props) {
   const ref = useRef<HTMLDivElement>(null);
   const closeRef = useRef(onClose);
@@ -43,7 +47,7 @@ export function Modal({ open, onClose, title, children }: Props) {
   }, [open]);
 
   if (!open) return null;
-  return (
+  return createPortal(
     <div className="modal-backdrop" onClick={onClose}>
       <div className="modal" role="dialog" aria-modal="true" aria-label={title} ref={ref} tabIndex={-1} onClick={(e) => e.stopPropagation()}>
         <button className="modal-close icon-btn" onClick={onClose} aria-label="Đóng">
@@ -51,6 +55,7 @@ export function Modal({ open, onClose, title, children }: Props) {
         </button>
         {children}
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

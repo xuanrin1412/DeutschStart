@@ -6,6 +6,7 @@ import { useProgress } from '@/context/ProgressContext';
 import { PageHeader } from '@/components/common/PageHeader';
 import { Flashcard } from '@/components/vocab/Flashcard';
 import { ProgressBar } from '@/components/ui/ProgressBar';
+import { AutoSpeakSwitch } from '@/components/ui/AutoSpeakSwitch';
 import { EmptyState } from '@/components/ui/States';
 import { dueQueue, type Grade } from '@/services/srs';
 import { savedWordIds } from '@/services/selectors';
@@ -99,8 +100,12 @@ export default function FlashcardsPage() {
             </div>
             <span className="small muted">Còn {queue.length} thẻ</span>
           </div>
-          <Flashcard word={current} onGrade={onGrade} />
-          <p className="muted small center-text">Phím tắt: Space = lật · 1 = Không nhớ · 2 = Nhớ · 3 = Rất dễ</p>
+          {/* Keyed by position too, so a card that comes back after "Không nhớ" is spoken again. */}
+          <Flashcard key={`${current.id}-${reviewed}`} word={current} onGrade={onGrade} />
+          <div className="row gap-sm center-y wrap space-between">
+            <AutoSpeakSwitch />
+            <p className="muted small">Phím tắt: Space = lật · 1 = Không nhớ · 2 = Nhớ · 3 = Rất dễ</p>
+          </div>
         </>
       ) : (
         <div className="card quiz-done">
