@@ -31,6 +31,7 @@ export const MORE_NAV: NavItem[] = [
   { to: '/pronunciation', label: 'Phát âm', icon: '🗣️' },
   { to: '/conversations', label: 'Hội thoại', icon: '💬' },
   { to: '/reading', label: 'Đọc hiểu', icon: '📰' },
+  { to: '/vocabulary/practice', label: 'Luyện từ vựng', icon: '🧠' },
   { to: '/flashcards', label: 'Flashcards', icon: '🃏' },
   { to: '/articles', label: 'Luyện mạo từ', icon: '🎯' },
   { to: '/quiz', label: 'Quiz', icon: '✅' },

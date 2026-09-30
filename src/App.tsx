@@ -15,6 +15,7 @@ const AlphabetPage = lazy(() => import('@/pages/AlphabetPage'));
 const VocabularyPage = lazy(() => import('@/pages/VocabularyPage'));
 const TopicPage = lazy(() => import('@/pages/TopicPage'));
 const WordPage = lazy(() => import('@/pages/WordPage'));
+const VocabPracticePage = lazy(() => import('@/pages/VocabPracticePage'));
 const FlashcardsPage = lazy(() => import('@/pages/FlashcardsPage'));
 const ArticlesPage = lazy(() => import('@/pages/ArticlesPage'));
 const GrammarPage = lazy(() => import('@/pages/GrammarPage'));
@@ -60,6 +61,7 @@ export default function App() {
                       <Route path="vocabulary" element={<VocabularyPage />} />
                       <Route path="vocabulary/topic/:topicId" element={<TopicPage />} />
                       <Route path="vocabulary/word/:wordId" element={<WordPage />} />
+                      <Route path="vocabulary/practice" element={<VocabPracticePage />} />
                       <Route path="flashcards" element={<FlashcardsPage />} />
                       <Route path="articles" element={<ArticlesPage />} />
                       <Route path="grammar" element={<GrammarPage />} />

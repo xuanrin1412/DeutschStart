@@ -9,6 +9,7 @@ import type {
   TranslationItem,
   Vocabulary,
 } from '@/types/models';
+import { fold } from './search';
 
 export const sentenceText = (s: SentenceExercise) => s.tokens.map((x) => x.text).join(' ') + (s.punctuation ?? '');
 
@@ -105,9 +106,29 @@ export const normalizeAnswer = (s: string) =>
     .replace(/\s+/g, ' ')
     .trim();
 
+/** Edit distance, capped: returns early once it is clearly above `max`. */
+function editDistance(a: string, b: string, max = 1) {
+  if (Math.abs(a.length - b.length) > max) return max + 1;
+  let prev = Array.from({ length: b.length + 1 }, (_, i) => i);
+  for (let i = 1; i <= a.length; i++) {
+    const cur = [i];
+    for (let j = 1; j <= b.length; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1));
+    prev = cur;
+  }
+  return prev[b.length];
+}
+
 export function isCorrect(q: Question, answer: string) {
-  const candidates = [q.answer, ...(q.accepted ?? [])].map(normalizeAnswer);
-  return candidates.includes(normalizeAnswer(answer));
+  const candidates = [q.answer, ...(q.accepted ?? [])];
+  if (q.match === 'loose') {
+    // Vietnamese meanings: accents optional, one typo allowed in longer answers.
+    const given = fold(normalizeAnswer(answer));
+    return candidates.some((c) => {
+      const want = fold(normalizeAnswer(c));
+      return want === given || (want.length >= 5 && editDistance(want, given) <= 1);
+    });
+  }
+  return candidates.map(normalizeAnswer).includes(normalizeAnswer(answer));
 }
 
 /**

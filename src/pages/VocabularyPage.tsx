@@ -39,7 +39,10 @@ export default function VocabularyPage() {
         why="Mỗi từ được học cùng mạo từ, hình ảnh và câu ví dụ – giúp bạn nhớ lâu và dùng được ngay."
         actions={
           <>
-            <Link to="/flashcards" className="btn btn-primary">
+            <Link to="/vocabulary/practice" className="btn btn-primary">
+              🧠 Luyện từ vựng
+            </Link>
+            <Link to="/flashcards" className="btn btn-ghost">
               🃏 Flashcards
             </Link>
             <Link to="/articles" className="btn btn-ghost">

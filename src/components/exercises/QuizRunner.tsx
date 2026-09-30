@@ -4,6 +4,7 @@ import type { Question } from '@/types/models';
 import { isCorrect } from '@/services/quiz';
 import { audioService } from '@/services/audio/audioService';
 import { useProgress } from '@/context/ProgressContext';
+import { useAutoSpeak } from '@/hooks/useAutoSpeak';
 import { AudioButton } from '@/components/ui/AudioButton';
 import { WordImage } from '@/components/ui/WordImage';
 import { ProgressBar } from '@/components/ui/ProgressBar';
@@ -28,6 +29,7 @@ const TYPE_LABEL: Record<Question['type'], string> = {
   image: 'Hình ảnh',
   'fill-blank': 'Điền từ',
   translation: 'Dịch câu',
+  typing: 'Tự gõ',
   ordering: 'Sắp xếp câu',
 };
 
@@ -39,17 +41,23 @@ export function QuizRunner({ questions, record = true, onFinish, onRestart, onAn
   const [result, setResult] = useState<boolean | null>(null);
   const [score, setScore] = useState(0);
   const [done, setDone] = useState(false);
+  const [showHint, setShowHint] = useState(false);
   const continueRef = useRef<HTMLButtonElement>(null);
+  const [autoSpeak] = useAutoSpeak();
 
   const q = questions[index];
+  const listening = !!q && (q.type === 'listening' || (q.category === 'listening' && (q.type === 'fill-blank' || q.type === 'typing')));
+  const typing = !!q && (q.type === 'translation' || q.type === 'typing');
+  const inputLang = q?.inputLang ?? 'de';
+  const displayLang = q?.displayLang ?? (q?.type === 'translation' ? 'vi' : 'de');
 
-  // Listening questions play automatically.
+  // Listening questions play automatically; others too when auto-speak is on and the question asks for it.
   useEffect(() => {
-    if (q && (q.type === 'listening' || (q.type === 'fill-blank' && q.category === 'listening')) && q.audioText) {
+    if (q && q.audioText && (listening || (autoSpeak && q.speakOnShow))) {
       const id = setTimeout(() => void audioService.play(q.audioText!).catch(() => {}), 250);
       return () => clearTimeout(id);
     }
-  }, [q]);
+  }, [q]); // eslint-disable-line react-hooks/exhaustive-deps
 
   useEffect(() => {
     if (result !== null) continueRef.current?.focus();
@@ -62,6 +70,8 @@ export function QuizRunner({ questions, record = true, onFinish, onRestart, onAn
     if (ok) setScore((s) => s + 1);
     if (record) recordAnswer(q, ok, value);
     onAnswered?.(q, ok);
+    // Hearing the right word straight after answering helps it stick.
+    if (autoSpeak && q.speakOnAnswer && q.audioText) void audioService.play(q.audioText).catch(() => {});
   };
 
   const next = () => {
@@ -74,6 +84,7 @@ export function QuizRunner({ questions, record = true, onFinish, onRestart, onAn
     setChosen(null);
     setTyped('');
     setResult(null);
+    setShowHint(false);
   };
 
   const restart = () => {
@@ -149,7 +160,7 @@ export function QuizRunner({ questions, record = true, onFinish, onRestart, onAn
           </div>
         )}
 
-        {(q.type === 'listening' || (q.type === 'fill-blank' && q.category === 'listening')) && q.audioText && (
+        {listening && q.audioText && (
           <div className="row gap-sm center">
             <AudioButton text={q.audioText} size="lg" label="Nghe lại" variant="pill" />
             <AudioButton text={q.audioText} size="lg" slow label="Chậm" variant="pill" />
@@ -157,9 +168,9 @@ export function QuizRunner({ questions, record = true, onFinish, onRestart, onAn
         )}
 
         {q.display && q.type !== 'ordering' && (
-          <p className={`quiz-display${q.type === 'translation' ? ' is-vi' : ''}`} lang={q.type === 'translation' ? 'vi' : 'de'}>
+          <p className={`quiz-display${displayLang === 'vi' ? ' is-vi' : ''}`} lang={displayLang}>
             {q.type === 'article' && q.image && <WordImage image={q.image} size="md" />} {q.display}
-            {q.type === 'multiple-choice' && q.audioText && <AudioButton text={q.audioText} size="sm" />}
+            {(q.type === 'multiple-choice' || q.type === 'typing') && displayLang === 'de' && q.audioText && !q.display.includes('___') && <AudioButton text={q.audioText} size="sm" />}
           </p>
         )}
 
@@ -177,7 +188,7 @@ export function QuizRunner({ questions, record = true, onFinish, onRestart, onAn
           </div>
         )}
 
-        {q.type === 'translation' && (
+        {typing && (
           <form
             className="translate-form"
             onSubmit={(e) => {
@@ -186,19 +197,42 @@ export function QuizRunner({ questions, record = true, onFinish, onRestart, onAn
             }}
           >
             <label htmlFor="translate-input" className="sr-only">
-              Câu trả lời tiếng Đức
+              {inputLang === 'vi' ? 'Câu trả lời tiếng Việt' : 'Câu trả lời tiếng Đức'}
             </label>
-            <input id="translate-input" className="input" lang="de" value={typed} onChange={(e) => setTyped(e.target.value)} placeholder="Nhập câu tiếng Đức…" disabled={result !== null} autoComplete="off" autoFocus />
+            <input
+              key={index}
+              id="translate-input"
+              className="input"
+              lang={inputLang}
+              value={typed}
+              onChange={(e) => setTyped(e.target.value)}
+              placeholder={inputLang === 'vi' ? 'Nhập nghĩa tiếng Việt…' : q.type === 'typing' ? 'Nhập từ tiếng Đức…' : 'Nhập câu tiếng Đức…'}
+              disabled={result !== null}
+              autoComplete="off"
+              autoCapitalize="off"
+              spellCheck={false}
+              autoFocus
+            />
             <div className="row gap-sm wrap umlaut-keys" aria-label="Chèn ký tự đặc biệt">
-              {['ä', 'ö', 'ü', 'ß'].map((c) => (
+              {inputLang === 'de' && ['ä', 'ö', 'ü', 'ß'].map((c) => (
                 <button key={c} type="button" className="btn btn-ghost btn-sm" onClick={() => setTyped((t) => t + c)} disabled={result !== null}>
                   {c}
                 </button>
               ))}
+              {q.hint && result === null && (
+                <button type="button" className="btn btn-ghost btn-sm" onClick={() => setShowHint(true)} disabled={showHint}>
+                  💡 Gợi ý
+                </button>
+              )}
               <button className="btn btn-primary" type="submit" disabled={!typed.trim() || result !== null}>
                 Kiểm tra
               </button>
             </div>
+            {showHint && q.hint && result === null && (
+              <p className="quiz-hint" role="status" lang={inputLang}>
+                💡 {q.hint}
+              </p>
+            )}
           </form>
         )}
 

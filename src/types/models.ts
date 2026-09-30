@@ -252,6 +252,7 @@ export type QuestionType =
   | 'image'
   | 'fill-blank'
   | 'translation'
+  | 'typing'
   | 'ordering';
 
 export type SkillCategory = 'vocab' | 'article' | 'listening' | 'grammar' | 'quiz' | 'pronunciation';
@@ -274,6 +275,17 @@ export interface Question {
   explanation?: string;
   wordId?: string;
   category: SkillCategory;
+  /** Language of `display` (default: German; Vietnamese for translation). */
+  displayLang?: 'de' | 'vi';
+  /** Language the learner types in (typing questions; default German). */
+  inputLang?: 'de' | 'vi';
+  /** "loose" ignores Vietnamese accents and allows one typo (used for Vietnamese meanings). */
+  match?: 'exact' | 'loose';
+  /** Revealed by the "Gợi ý" button on typing questions, e.g. "der A _ _ _ _". */
+  hint?: string;
+  /** With auto-speak on: say `audioText` when the question appears / right after it is answered. */
+  speakOnShow?: boolean;
+  speakOnAnswer?: boolean;
 }
 
 /* ---------- Users & progress ---------- */

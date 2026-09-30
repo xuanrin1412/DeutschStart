@@ -161,12 +161,12 @@ export default function HomePage() {
         <div className="grid grid-4">
           {[
             { to: '/alphabet', icon: '🔤', title: 'Bảng chữ cái', text: 'A–Z và Ä Ö Ü ß' },
+            { to: '/vocabulary/practice', icon: '🧠', title: 'Luyện từ vựng', text: 'Trắc nghiệm, tự gõ, nghe, điền câu' },
             { to: '/flashcards', icon: '🃏', title: 'Flashcards', text: 'Lật thẻ ghi nhớ' },
             { to: '/articles', icon: '🎯', title: 'der · die · das', text: 'Luyện mạo từ' },
             { to: '/conversations', icon: '💬', title: 'Hội thoại', text: 'Tình huống thực tế' },
             { to: '/reading', icon: '📰', title: 'Đọc hiểu', text: 'Email, biển báo, quảng cáo' },
             { to: '/listening', icon: '🎧', title: 'Luyện nghe', text: 'Nghe từ, câu, điền từ' },
-            { to: '/quiz', icon: '✅', title: 'Quiz', text: 'Kiểm tra tổng hợp' },
             { to: '/mistakes', icon: '📕', title: 'Sổ lỗi sai', text: 'Ôn lại câu hay sai' },
           ].map((q) => (
             <Link key={q.to} to={q.to} className="card card-hover quick">

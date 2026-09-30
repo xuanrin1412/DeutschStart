@@ -1821,6 +1821,78 @@ mark.hl {
 .umlaut-keys .btn-primary {
   margin-left: auto;
 }
+.quiz-hint {
+  margin: 0;
+  padding: 8px 12px;
+  border-radius: var(--radius-sm);
+  background: var(--gold-soft);
+  color: var(--gold-ink);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+}
+
+/* Vocabulary practice: settings as checkbox cards */
+.option-group {
+  margin: 0;
+  min-width: 0;
+}
+.option-group > legend {
+  float: left;
+  width: 100%;
+  padding: 0;
+}
+.option-group > legend + * {
+  clear: both;
+}
+.option-group > .switch {
+  display: flex;
+}
+.option-card {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 12px 14px;
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  cursor: pointer;
+  transition: border-color 0.15s, background 0.15s;
+}
+.option-card:hover {
+  border-color: var(--muted);
+}
+.option-card:has(input:checked) {
+  border-color: var(--ink);
+  background: var(--surface-2);
+}
+.option-card input {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  margin: 2px 0 0;
+  accent-color: var(--ink);
+}
+.option-card strong,
+.option-card small {
+  display: block;
+}
+.option-card small {
+  color: var(--muted);
+  margin-top: 2px;
+}
+.practice-wrong-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.practice-wrong-list li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
 
 /* Sentence builder */
 .builder {
