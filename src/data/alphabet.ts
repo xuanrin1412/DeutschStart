@@ -37,8 +37,9 @@ const rows: Row[] = [
 
 // TTS reads `name` as a German word and guesses: "tse" comes out as a short "tsə", "er" as the pronoun /eːɐ̯/.
 // These spellings force the right vowel: "eh" = long e (like Reh, Zeh), doubled consonant = short e (like Bett).
+// Exception: "Emm" is read as the filler "ähm", so M uses the bare letter, which TTS reads as its name /ɛm/.
 const spoken: Record<string, string> = {
-  B: 'Beh', C: 'Zeh', D: 'Deh', F: 'Eff', G: 'Geh', H: 'Hah', J: 'Jott', K: 'Kah', L: 'Ell', M: 'Emm', N: 'Enn',
+  B: 'Beh', C: 'Zeh', D: 'Deh', F: 'Eff', G: 'Geh', H: 'Hah', J: 'Jott', K: 'Kah', L: 'Ell', M: 'M', N: 'Enn',
   P: 'Peh', Q: 'Kuh', R: 'Err', S: 'Ess', T: 'Teh', V: 'Fau', W: 'Weh', X: 'Iks', Y: 'Ypsilon', Z: 'Zett', ß: 'Eszett',
 };
 
