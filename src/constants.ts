@@ -32,6 +32,9 @@ export const WORD_TYPE_LABELS: Record<string, string> = {
   verb: 'Động từ',
   adjective: 'Tính từ',
   adverb: 'Trạng từ',
+  pronoun: 'Đại từ',
+  conjunction: 'Liên từ',
+  preposition: 'Giới từ',
   phrase: 'Cụm từ',
   interjection: 'Thán từ',
 };

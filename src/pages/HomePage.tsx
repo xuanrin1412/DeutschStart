@@ -164,6 +164,10 @@ export default function HomePage() {
             { to: '/flashcards', icon: '🃏', title: 'Flashcards', text: 'Lật thẻ ghi nhớ' },
             { to: '/articles', icon: '🎯', title: 'der · die · das', text: 'Luyện mạo từ' },
             { to: '/conversations', icon: '💬', title: 'Hội thoại', text: 'Tình huống thực tế' },
+            { to: '/reading', icon: '📰', title: 'Đọc hiểu', text: 'Email, biển báo, quảng cáo' },
+            { to: '/listening', icon: '🎧', title: 'Luyện nghe', text: 'Nghe từ, câu, điền từ' },
+            { to: '/quiz', icon: '✅', title: 'Quiz', text: 'Kiểm tra tổng hợp' },
+            { to: '/mistakes', icon: '📕', title: 'Sổ lỗi sai', text: 'Ôn lại câu hay sai' },
           ].map((q) => (
             <Link key={q.to} to={q.to} className="card card-hover quick">
               <span className="quick-icon" aria-hidden="true">

@@ -7,6 +7,7 @@ import { PageHeader } from '@/components/common/PageHeader';
 import { QuizRunner } from '@/components/exercises/QuizRunner';
 import {
   articleQuestion,
+  hasPicture,
   imageQuestion,
   listeningSentenceQuestion,
   meaningQuestion,
@@ -39,7 +40,7 @@ export default function QuizPage() {
   const questions = useMemo<Question[]>(() => {
     const v = content.vocabulary;
     const nouns = v.filter((w) => w.article);
-    const withImage = v.filter((w) => w.image.emoji || w.image.url);
+    const withImage = v.filter(hasPicture);
     const gen: Record<Exclude<Mode, 'mixed'>, (n: number) => Question[]> = {
       'multiple-choice': (n) => sample(v, n).map((w) => meaningQuestion(w, v)),
       article: (n) => sample(nouns, n).map(articleQuestion),

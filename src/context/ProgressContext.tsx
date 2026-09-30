@@ -23,6 +23,7 @@ interface ProgressApi {
   updateLesson(id: string, step: number, totalSteps: number, completed?: boolean): void;
   markLetterSeen(letter: string): void;
   completeGrammarLesson(id: string, score: number): void;
+  completeReading(id: string, score: number): void;
   addStudySeconds(seconds: number): void;
   resetProgress(): void;
 }
@@ -175,6 +176,11 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
         update((p) => ({
           ...p,
           grammarLessons: { ...p.grammarLessons, [id]: { completed: true, bestScore: Math.max(score, p.grammarLessons[id]?.bestScore ?? 0) } },
+        })),
+      completeReading: (id, score) =>
+        update((p) => ({
+          ...p,
+          readings: { ...p.readings, [id]: { bestScore: Math.max(score, p.readings?.[id]?.bestScore ?? 0) } },
         })),
       addStudySeconds: (seconds) => update((p) => ({ ...p, studySeconds: p.studySeconds + seconds })),
       resetProgress: () => {

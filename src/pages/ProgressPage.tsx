@@ -52,7 +52,7 @@ export default function ProgressPage() {
         <div className="grow">
           <p className="eyebrow">Tiến độ đến A1</p>
           <ProgressBar value={pct} label="Tiến độ A1" size="lg" showValue />
-          <p className="muted small">Tính từ: từ vựng (40%), 12 bài Level 0 (30%) và ngữ pháp A1 (30%).</p>
+          <p className="muted small">Tính từ: từ vựng (40%), bài học Level 0 + Level 1 (30%) và ngữ pháp A1 (30%).</p>
         </div>
       </section>
 

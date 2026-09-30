@@ -7,7 +7,7 @@
 
 export type CefrLevel = 'A0' | 'A1' | 'A2' | 'B1';
 export type Article = 'der' | 'die' | 'das';
-export type WordType = 'noun' | 'verb' | 'adjective' | 'adverb' | 'phrase' | 'interjection';
+export type WordType = 'noun' | 'verb' | 'adjective' | 'adverb' | 'pronoun' | 'conjunction' | 'preposition' | 'phrase' | 'interjection';
 export type Difficulty = 1 | 2 | 3;
 
 /* ---------- Media ---------- */
@@ -214,6 +214,35 @@ export interface TranslationItem {
   accepted: string[]; // accepted German answers
 }
 
+/** A reading-comprehension question (Richtig/Falsch or multiple choice), like the A1 exam "Lesen" part. */
+export interface ReadingQuestion {
+  id: string;
+  /** German statement or question about the text. */
+  statement: string;
+  options: string[];
+  answer: string;
+  /** Vietnamese explanation pointing to the relevant line of the text. */
+  explanation: string;
+}
+
+export interface ReadingText {
+  id: string;
+  title: string; // Vietnamese
+  titleDe: string;
+  icon: string;
+  level: CefrLevel;
+  /** Kind of text, e.g. "E-Mail", "Anzeige", "Schild". */
+  kind: string;
+  /** Vietnamese task description. */
+  context: string;
+  /** German text, one entry per paragraph / line. */
+  text: string[];
+  /** Vietnamese translation, same length as `text`. */
+  textVi: string[];
+  glossary?: Phrase[];
+  questions: ReadingQuestion[];
+}
+
 /* ---------- Questions / exercises ---------- */
 
 export type QuestionType =
@@ -311,6 +340,8 @@ export interface UserProgress {
   pronunciation: { practiced: number; matched: number; sounds: string[] };
   lessons: Record<string, LessonProgress>;
   grammarLessons: Record<string, { completed: boolean; bestScore: number }>;
+  /** Best score per reading text. Optional: progress saved before this field existed has none. */
+  readings?: Record<string, { bestScore: number }>;
   mistakes: Record<string, Mistake>;
   alphabetSeen: string[];
   currentLessonId?: string;

@@ -23,7 +23,7 @@ export default function ListeningPage() {
   const questions = useMemo(() => {
     if (level === 1) return sample(vocabulary, 8).map((w) => listeningWordQuestion(w, vocabulary));
     if (level === 2) return shuffle(listeningSentences).slice(0, 6).map(listeningSentenceQuestion);
-    if (level === 3) return shuffle(fillBlanks).map(fillBlankQuestion);
+    if (level === 3) return shuffle(fillBlanks).slice(0, 8).map(fillBlankQuestion);
     return [];
   }, [level, seed, vocabulary, listeningSentences, fillBlanks]);
 

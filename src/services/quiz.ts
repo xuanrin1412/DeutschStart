@@ -68,6 +68,9 @@ export function listeningWordQuestion(w: Vocabulary, pool: Vocabulary[]): Questi
   return { id: `lw-${w.id}`, type: 'listening', prompt: 'Nghe và chọn nghĩa đúng', audioText: fullWord(w), options: opts, answer: w.meaning, wordId: w.id, category: 'listening', explanation: `Bạn vừa nghe: ${fullWord(w)} ${w.ipa}` };
 }
 
+/** Only concrete nouns with a picture make sense for "Đây là gì?" questions. */
+export const hasPicture = (w: Vocabulary) => w.type === 'noun' && !!(w.image.emoji || w.image.url);
+
 export function imageQuestion(w: Vocabulary, pool: Vocabulary[]): Question {
   const opts = shuffle([fullWord(w), ...distractors(pool.filter((x) => x.image.emoji || x.image.url), w, (x) => x.id).map(fullWord)]);
   return { id: `img-${w.id}`, type: 'image', prompt: 'Đây là gì trong tiếng Đức?', image: w.image, options: opts, answer: fullWord(w), wordId: w.id, category: 'quiz', explanation: `${fullWord(w)} = ${w.meaning}` };
@@ -89,10 +92,14 @@ export function orderingQuestion(s: SentenceExercise): Question {
   return { id: `ord-${s.id}`, type: 'ordering', prompt: 'Sắp xếp thành câu đúng', display: s.vi, tokens: s.tokens, answer: sentenceText(s), accepted: s.alternatives, audioText: sentenceText(s), category: 'grammar', explanation: s.structure };
 }
 
-/** Normalise free-text answers: case, punctuation, whitespace, typographic quotes. */
+/** Normalise free-text answers: case, punctuation, whitespace, typographic quotes, and ä/ö/ü/ß typed as ae/oe/ue/ss. */
 export const normalizeAnswer = (s: string) =>
   s
     .toLowerCase()
+    .replace(/ä/g, 'ae')
+    .replace(/ö/g, 'oe')
+    .replace(/ü/g, 'ue')
+    .replace(/ß/g, 'ss')
     .replace(/[’']/g, "'")
     .replace(/[.,!?;:"„“]/g, '')
     .replace(/\s+/g, ' ')

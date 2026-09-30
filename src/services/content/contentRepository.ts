@@ -6,6 +6,7 @@ import type {
   Lesson,
   ListeningSentence,
   PronunciationSound,
+  ReadingText,
   SentenceExercise,
   TranslationItem,
   Vocabulary,
@@ -24,6 +25,7 @@ export interface ContentBundle {
   listeningSentences: ListeningSentence[];
   fillBlanks: FillBlankItem[];
   translations: TranslationItem[];
+  readings: ReadingText[];
 }
 
 /**
@@ -38,7 +40,7 @@ export interface ContentRepository {
 class LocalContentRepository implements ContentRepository {
   async load(): Promise<ContentBundle> {
     // Dynamic imports keep content out of the initial JS chunk.
-    const [v, t, a, p, l, g, c, s, e] = await Promise.all([
+    const [v, t, a, p, l, g, c, s, e, r] = await Promise.all([
       import('@/data/vocabulary'),
       import('@/data/topics'),
       import('@/data/alphabet'),
@@ -48,6 +50,7 @@ class LocalContentRepository implements ContentRepository {
       import('@/data/conversations'),
       import('@/data/sentences'),
       import('@/data/exercises'),
+      import('@/data/reading'),
     ]);
     return {
       vocabulary: v.vocabulary,
@@ -61,6 +64,7 @@ class LocalContentRepository implements ContentRepository {
       listeningSentences: e.listeningSentences,
       fillBlanks: e.fillBlanks,
       translations: e.translations,
+      readings: r.readings,
     };
   }
 }

@@ -2207,6 +2207,36 @@ mark.hl {
   color: var(--ink-2);
   margin: 0;
 }
+.reading-text {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.reading-para {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 8px 10px;
+  border-radius: 12px;
+  border: 1.5px solid transparent;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+.reading-para p {
+  margin: 0;
+  white-space: pre-line;
+}
+.reading-para p[lang='de'] {
+  font-size: 1.05rem;
+  line-height: 1.6;
+}
+.reading-para.is-playing {
+  border-color: var(--flag-gold);
+  box-shadow: 0 0 0 4px var(--gold-soft);
+}
+.reading-vi {
+  color: var(--ink-2);
+  margin-top: 4px !important;
+}
 .practice-turn {
   border: 2px dashed var(--flag-gold);
   border-radius: var(--radius);

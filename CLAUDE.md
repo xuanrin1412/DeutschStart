@@ -25,16 +25,17 @@ npm run preview    # serve dist/ → http://localhost:4173
 | Feature | Route(s) | Notes |
 |---|---|---|
 | Dashboard | `/` | Hero, A1 progress %, streak, words due for review, current lesson, daily challenge, word of the day, quick links |
-| Start from zero | `/learn`, `/learn/:lessonId` | 12 Level-0 lessons played step by step; progress is saved per step |
+| Start from zero | `/learn`, `/learn/:lessonId` | 28 lessons: 12 Level 0 (A0) + 16 Level 1 (A1, ids `a1-*`), played step by step; progress is saved per step |
 | Alphabet | `/alphabet` | A–Z + Ä Ö Ü ß. A modal card per letter: name + IPA, picture word, example, Vietnamese tip; "play whole alphabet" button |
-| Vocabulary | `/vocabulary`, `/vocabulary/topic/:topicId`, `/vocabulary/word/:wordId` | 61 words, 14 topics, filters by review state, topic quiz, full word card with actions (Nghe / Lưu từ / Học từ này / Tôi đã biết) |
+| Vocabulary | `/vocabulary`, `/vocabulary/topic/:topicId`, `/vocabulary/word/:wordId` | 674 words (A1 word list), 24 topics, filters by review state, topic quiz, full word card with actions (Nghe / Lưu từ / Học từ này / Tôi đã biết) |
 | Flashcards | `/flashcards?mode=new\|due\|saved`, `?topic=` | Flip card; *Không nhớ / Nhớ / Rất dễ* drive spaced repetition |
 | Articles | `/articles` | der/die/das quiz weighted toward the weakest article and past mistakes; accuracy per article |
-| Grammar | `/grammar`, `/grammar/:lessonId` | 8 complete lessons + 7 marked "Sắp có" (coming soon): explanation, table with audio, highlighted structure, examples, sentence builder, mini quiz |
+| Grammar | `/grammar`, `/grammar/:lessonId` | 23 A1 lessons (up to Perfekt and war/hatte): explanation, table with audio, highlighted structure, examples, sentence builder, mini quiz |
 | Listening | `/listening` | Level 1 word → meaning, level 2 sentence recognition, level 3 fill the gap; replay and slow playback |
 | Pronunciation | `/pronunciation` | 16 hard sounds (ch, r, ü, ö, ä, z, w, v, sch, sp, st, ei, ie, eu…), mouth diagram (SVG), microphone check |
-| Conversations | `/conversations`, `/conversations/:convoId` | 10 scenarios, audio per line, slow mode, translation toggle, role-play mode |
+| Conversations | `/conversations`, `/conversations/:convoId` | 20 scenarios, audio per line, slow mode, translation toggle, role-play mode |
 | Review | `/review` | Due words (most-missed first), review-state counts, daily challenge, links |
+| Reading | `/reading`, `/reading/:readingId` | 10 A1-exam-style texts (email, SMS, signs, ads, timetable) with audio, translation toggle, glossary, Richtig/Falsch questions; best score saved |
 | Quiz | `/quiz?type=` | multiple-choice, article, listening, image, translation (typed input), ordering, mixed |
 | Mistake book | `/mistakes` | Wrong answers stored as snapshots with a count; "Ôn lại" asks them again, and a correct answer resolves the mistake |
 | Progress | `/progress` | Level, stat tiles, article accuracy, review-state bars, achievements, reset progress (with confirmation) |
@@ -57,7 +58,7 @@ src/
   data/                    # Learning content (pure data, no UI)
     vocabulary.ts          #   compact row tuples → Vocabulary[]
     topics.ts, alphabet.ts, pronunciation.ts, lessons.ts, grammar.ts,
-    conversations.ts, sentences.ts, exercises.ts (listening / fill-blank / translation),
+    conversations.ts, sentences.ts, exercises.ts (listening / fill-blank / translation), reading.ts,
     achievements.ts        #   achievements + dailyGoals (daily challenge targets)
   services/
     content/contentRepository.ts  # ContentRepository interface; local impl dynamic-imports data/
@@ -116,6 +117,7 @@ The path alias `@/` maps to `src/`; it is configured in both `tsconfig.json` and
 - **A grammar lesson:** fill in its entry in `src/data/grammar.ts` and set `available: true`. Tables need `audioCols`, the indices of the German columns to read aloud.
 - **A sentence exercise:** add it to `src/data/sentences.ts`. List the tokens in the correct order, each with a role. Put other valid word orders in `alternatives`.
 - **Conversations, listening items, translations:** add them to `conversations.ts` and `exercises.ts`.
+- **A reading text:** add it to `src/data/reading.ts`. `textVi` must have one entry per `text` paragraph.
 
 ## Conventions and gotchas
 
@@ -139,4 +141,5 @@ The path alias `@/` maps to `src/`; it is configured in both `tsconfig.json` and
 - Audio uses the browser's text-to-speech. Quality depends on the German voices installed; Chrome and Edge include good ones.
 - The microphone check (pronunciation, role-play) works only in Chrome and Edge. It compares text similarity, not real pronunciation scoring.
 - Images are emoji, except `der Tisch`, which uses an inline SVG. `MediaImage.url` supports real images.
-- Level 1 (A1) of the curriculum and 7 grammar lessons are shown as "Sắp có" (coming soon).
+- Content covers A0 → A1. Nothing for A2 yet (dative is only an intro; no weil/dass, reflexive verbs, comparatives).
+- Grammar example highlights use a word-boundary regex, so a highlighted word must not start or end with ä/ö/ü/ß.

@@ -23,6 +23,8 @@ const ListeningPage = lazy(() => import('@/pages/ListeningPage'));
 const PronunciationPage = lazy(() => import('@/pages/PronunciationPage'));
 const ConversationsPage = lazy(() => import('@/pages/ConversationsPage'));
 const ConversationPage = lazy(() => import('@/pages/ConversationPage'));
+const ReadingPage = lazy(() => import('@/pages/ReadingPage'));
+const ReadingTextPage = lazy(() => import('@/pages/ReadingTextPage'));
 const ReviewPage = lazy(() => import('@/pages/ReviewPage'));
 const QuizPage = lazy(() => import('@/pages/QuizPage'));
 const MistakesPage = lazy(() => import('@/pages/MistakesPage'));
@@ -66,6 +68,8 @@ export default function App() {
                       <Route path="pronunciation" element={<PronunciationPage />} />
                       <Route path="conversations" element={<ConversationsPage />} />
                       <Route path="conversations/:convoId" element={<ConversationPage />} />
+                      <Route path="reading" element={<ReadingPage />} />
+                      <Route path="reading/:readingId" element={<ReadingTextPage />} />
                       <Route path="review" element={<ReviewPage />} />
                       <Route path="quiz" element={<QuizPage />} />
                       <Route path="mistakes" element={<MistakesPage />} />

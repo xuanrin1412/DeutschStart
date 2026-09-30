@@ -1,15 +1,26 @@
 import type { Achievement, DailyGoal } from '@/types/models';
 
-const learnedCount = (p: Parameters<Achievement['isUnlocked']>[0]) =>
-  Object.values(p.vocabulary).filter((v) => v.state !== 'new').length;
+type P = Parameters<Achievement['isUnlocked']>[0];
+
+const learnedCount = (p: P) => Object.values(p.vocabulary).filter((v) => v.state !== 'new').length;
+
+/** Level 1 lesson ids start with "a1-"; everything else is Level 0. */
+const completedLessons = (p: P, level1: boolean) =>
+  Object.entries(p.lessons).filter(([id, l]) => l.completed && id.startsWith('a1-') === level1).length;
+
+const completedGrammar = (p: P) => Object.values(p.grammarLessons).filter((g) => g.completed).length;
 
 export const achievements: Achievement[] = [
   { id: 'first-word', icon: '🌱', title: 'Từ đầu tiên', description: 'Học từ vựng đầu tiên.', isUnlocked: (p) => learnedCount(p) >= 1 },
   { id: 'words-10', icon: '📚', title: 'Mười từ', description: 'Học 10 từ vựng.', isUnlocked: (p) => learnedCount(p) >= 10 },
   { id: 'words-50', icon: '🏅', title: 'Năm mươi từ', description: 'Học 50 từ vựng.', isUnlocked: (p) => learnedCount(p) >= 50 },
+  { id: 'words-200', icon: '📗', title: 'Hai trăm từ', description: 'Học 200 từ vựng.', isUnlocked: (p) => learnedCount(p) >= 200 },
+  { id: 'words-500', icon: '📘', title: 'Năm trăm từ', description: 'Học 500 từ vựng – gần đủ vốn từ A1!', isUnlocked: (p) => learnedCount(p) >= 500 },
   { id: 'alphabet', icon: '🔤', title: 'Bậc thầy chữ cái', description: 'Xem hết 30 chữ cái.', isUnlocked: (p) => p.alphabetSeen.length >= 30 },
   { id: 'first-lesson', icon: '🎓', title: 'Bài học đầu tiên', description: 'Hoàn thành một bài học.', isUnlocked: (p) => Object.values(p.lessons).some((l) => l.completed) },
-  { id: 'level0', icon: '🚀', title: 'Hoàn thành A0', description: 'Hoàn thành cả 12 bài Level 0.', isUnlocked: (p) => Object.values(p.lessons).filter((l) => l.completed).length >= 12 },
+  { id: 'level0', icon: '🚀', title: 'Hoàn thành A0', description: 'Hoàn thành cả 12 bài Level 0.', isUnlocked: (p) => completedLessons(p, false) >= 12 },
+  { id: 'level1', icon: '🏆', title: 'Hoàn thành Level 1', description: 'Hoàn thành cả 16 bài Level 1 – A1.', isUnlocked: (p) => completedLessons(p, true) >= 16 },
+  { id: 'grammar-10', icon: '🧠', title: 'Chăm chỉ ngữ pháp', description: 'Hoàn thành 10 bài ngữ pháp.', isUnlocked: (p) => completedGrammar(p) >= 10 },
   { id: 'streak-3', icon: '🔥', title: 'Ba ngày liền', description: 'Chuỗi học 3 ngày.', isUnlocked: (p) => p.streak.longest >= 3 },
   { id: 'streak-7', icon: '⚡', title: 'Một tuần kiên trì', description: 'Chuỗi học 7 ngày.', isUnlocked: (p) => p.streak.longest >= 7 },
   { id: 'article-pro', icon: '🎯', title: 'Cao thủ mạo từ', description: 'Trả lời đúng 30 câu mạo từ.', isUnlocked: (p) => p.articleStats.der.correct + p.articleStats.die.correct + p.articleStats.das.correct >= 30 },

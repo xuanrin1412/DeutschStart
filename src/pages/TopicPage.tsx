@@ -5,7 +5,9 @@ import { PageHeader } from '@/components/common/PageHeader';
 import { WordTile } from '@/components/vocab/VocabCard';
 import { QuizRunner } from '@/components/exercises/QuizRunner';
 import { EmptyState } from '@/components/ui/States';
-import { imageQuestion, listeningWordQuestion, meaningQuestion, reverseMeaningQuestion, shuffle, articleQuestion } from '@/services/quiz';
+import { hasPicture, imageQuestion, listeningWordQuestion, meaningQuestion, reverseMeaningQuestion, shuffle, articleQuestion } from '@/services/quiz';
+
+const TOPIC_QUIZ_SIZE = 15;
 
 export default function TopicPage() {
   const { topicId = '' } = useParams();
@@ -18,7 +20,13 @@ export default function TopicPage() {
   const questions = useMemo(() => {
     const gens = [meaningQuestion, reverseMeaningQuestion, imageQuestion, listeningWordQuestion];
     const topicWords = vocabulary.filter((w) => w.topicId === topicId);
-    return shuffle(topicWords).map((w, i) => (w.article && i % 3 === 2 ? articleQuestion(w) : gens[i % gens.length](w, vocabulary)));
+    return shuffle(topicWords)
+      .slice(0, TOPIC_QUIZ_SIZE)
+      .map((w, i) => {
+        if (w.article && i % 3 === 2) return articleQuestion(w);
+        const gen = gens[i % gens.length];
+        return gen === imageQuestion && !hasPicture(w) ? meaningQuestion(w, vocabulary) : gen(w, vocabulary);
+      });
     // `seed` regenerates the quiz on "Làm lại".
   }, [topicId, vocabulary, seed]);
 
