@@ -16,7 +16,7 @@ export function LetterCard({ letter }: { letter: AlphabetLetter }) {
           <p className="row gap-sm center-y">
             <strong lang="de">„{letter.name}“</strong> <Ipa>{letter.nameIpa}</Ipa>
           </p>
-          <AudioButton text={letter.name} label="Nghe tên chữ" variant="pill" size="sm" />
+          <AudioButton text={letter.speak} label="Nghe tên chữ" variant="pill" size="sm" />
         </div>
       </div>
 

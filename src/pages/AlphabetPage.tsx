@@ -31,7 +31,7 @@ export default function AlphabetPage() {
       return;
     }
     await audioService.playSequence(
-      basic.map((l) => l.name),
+      basic.map((l) => l.speak),
       {},
       (i) => setPlayingAll(i),
     );
