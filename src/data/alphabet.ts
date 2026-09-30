@@ -35,9 +35,17 @@ const rows: Row[] = [
   ['ß', 'eszett', '/ɛsˈtsɛt/', 'die Straße', '/ˈʃtʁaːsə/', '🛣️', 'con đường', 'Die Straße ist lang.', 'Con đường dài.', 'ß (Eszett) luôn đọc là "s" rõ, không bao giờ đọc "z". Xuất hiện sau nguyên âm dài: Straße, groß.'],
 ];
 
+// TTS reads `name` as a German word and guesses: "tse" comes out as a short "tsə", "er" as the pronoun /eːɐ̯/.
+// These spellings force the right vowel: "eh" = long e (like Reh, Zeh), doubled consonant = short e (like Bett).
+const spoken: Record<string, string> = {
+  B: 'Beh', C: 'Zeh', D: 'Deh', F: 'Eff', G: 'Geh', H: 'Hah', J: 'Jott', K: 'Kah', L: 'Ell', M: 'Emm', N: 'Enn',
+  P: 'Peh', Q: 'Kuh', R: 'Err', S: 'Ess', T: 'Teh', V: 'Fau', W: 'Weh', X: 'Iks', Y: 'Ypsilon', Z: 'Zett', ß: 'Eszett',
+};
+
 export const alphabet: AlphabetLetter[] = rows.map(([letter, name, nameIpa, word, wordIpa, emoji, meaning, example, exampleVi, tip]) => ({
   letter,
   name,
+  speak: spoken[letter] ?? name,
   nameIpa,
   word,
   wordIpa,

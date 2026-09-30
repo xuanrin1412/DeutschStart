@@ -61,6 +61,7 @@ export interface Vocabulary {
 export interface AlphabetLetter {
   letter: string;
   name: string; // how the letter is spoken, e.g. "A" → "a"
+  speak: string; // text sent to TTS; German spelling that forces the right vowel length, e.g. "C" → "Zeh"
   nameIpa: string;
   word: string; // example word incl. article
   wordIpa: string;
