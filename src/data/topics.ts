@@ -1,0 +1,18 @@
+import type { VocabularyTopic } from '@/types/models';
+
+export const topics: VocabularyTopic[] = [
+  { id: 'greetings', name: 'Chào hỏi', nameDe: 'Begrüßung', icon: '👋', description: 'Những câu chào và lịch sự cơ bản nhất.' },
+  { id: 'family', name: 'Gia đình', nameDe: 'Familie', icon: '👨‍👩‍👧', description: 'Bố mẹ, anh chị em và người thân.' },
+  { id: 'home', name: 'Nhà cửa', nameDe: 'Zuhause', icon: '🏠', description: 'Đồ vật quen thuộc trong nhà.' },
+  { id: 'food', name: 'Đồ ăn', nameDe: 'Essen', icon: '🍎', description: 'Thức ăn và đồ uống hằng ngày.' },
+  { id: 'shopping', name: 'Mua sắm', nameDe: 'Einkaufen', icon: '🛒', description: 'Đi chợ, siêu thị và trả tiền.' },
+  { id: 'transport', name: 'Giao thông', nameDe: 'Verkehr', icon: '🚆', description: 'Tàu, xe buýt, xe đạp và nhà ga.' },
+  { id: 'school', name: 'Trường học', nameDe: 'Schule', icon: '🏫', description: 'Lớp học, thầy cô và đồ dùng học tập.' },
+  { id: 'work', name: 'Công việc', nameDe: 'Arbeit', icon: '💼', description: 'Nơi làm việc và đồng nghiệp.' },
+  { id: 'time', name: 'Thời gian', nameDe: 'Zeit', icon: '🕐', description: 'Ngày, tuần, giờ giấc.' },
+  { id: 'weather', name: 'Thời tiết', nameDe: 'Wetter', icon: '🌦️', description: 'Nắng, mưa, nóng, lạnh.' },
+  { id: 'clothes', name: 'Quần áo', nameDe: 'Kleidung', icon: '👕', description: 'Trang phục hằng ngày.' },
+  { id: 'health', name: 'Sức khỏe', nameDe: 'Gesundheit', icon: '🏥', description: 'Đi khám bác sĩ, hiệu thuốc.' },
+  { id: 'travel', name: 'Du lịch', nameDe: 'Reisen', icon: '✈️', description: 'Máy bay, khách sạn, hành lý.' },
+  { id: 'living', name: 'Sống ở Đức', nameDe: 'Leben in Deutschland', icon: '🏘️', description: 'Thủ tục và cuộc sống hằng ngày ở Đức.' },
+];
