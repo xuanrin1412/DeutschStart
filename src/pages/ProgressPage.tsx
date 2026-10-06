@@ -23,9 +23,8 @@ const SKILL_PRACTICE: Record<Skill, string> = {
 
 export default function ProgressPage() {
   const content = useContent();
-  const { progress, resetProgress } = useProgress();
+  const { progress } = useProgress();
   const { user } = useAuth();
-  const [confirmReset, setConfirmReset] = useState(false);
 
   const level = currentLevel(progress, content);
   const pct = a1Progress(progress, content);
@@ -144,29 +143,12 @@ export default function ProgressPage() {
         </div>
       </section>
 
-      <section className="card danger-zone">
-        <h2 className="h4">Đặt lại tiến độ</h2>
-        <p className="muted small">Xóa toàn bộ tiến độ học của tài khoản hiện tại. Không thể hoàn tác.</p>
-        {confirmReset ? (
-          <div className="row gap-sm wrap">
-            <button
-              className="btn btn-danger"
-              onClick={() => {
-                resetProgress();
-                setConfirmReset(false);
-              }}
-            >
-              Có, xóa tiến độ
-            </button>
-            <button className="btn btn-ghost" onClick={() => setConfirmReset(false)}>
-              Hủy
-            </button>
-          </div>
-        ) : (
-          <button className="btn btn-ghost" onClick={() => setConfirmReset(true)}>
-            Đặt lại tiến độ…
-          </button>
-        )}
+      <section className="card">
+        <h2 className="h4">💾 Sao lưu, khôi phục và xóa tiến độ</h2>
+        <p className="muted small">Xuất tiến độ ra file để dùng trên máy khác, nhập lại từ file backup, hoặc xóa toàn bộ tiến độ.</p>
+        <Link to="/settings" className="btn btn-ghost">
+          ⚙️ Mở Dữ liệu học tập
+        </Link>
       </section>
     </div>
   );

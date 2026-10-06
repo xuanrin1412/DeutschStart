@@ -37,5 +37,6 @@ export const MORE_NAV: NavItem[] = [
   { to: '/quiz', label: 'Quiz', icon: '✅' },
   { to: '/mistakes', label: 'Sổ lỗi sai', icon: '📕' },
   { to: '/progress', label: 'Tiến độ', icon: '📈' },
+  { to: '/settings', label: 'Cài đặt & dữ liệu', icon: '⚙️' },
   { to: '/profile', label: 'Tài khoản', icon: '👤' },
 ];

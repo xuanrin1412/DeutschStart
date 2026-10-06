@@ -98,6 +98,9 @@ function ProfileMenu() {
           <Link to="/progress" className="popover-item" role="menuitem" onClick={() => setOpen(false)}>
             📈 Tiến độ học
           </Link>
+          <Link to="/settings" className="popover-item" role="menuitem" onClick={() => setOpen(false)}>
+            ⚙️ Cài đặt & sao lưu tiến độ
+          </Link>
           {user ? (
             <button
               className="popover-item"

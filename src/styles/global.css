@@ -1528,6 +1528,57 @@ mark.hl {
   margin: 0;
 }
 
+/* Settings: learning data, backup */
+.data-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+.backup-warn {
+  color: var(--gold-ink);
+  font-weight: 600;
+}
+.restore-card {
+  padding: 16px;
+  border: 2px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.restore-card .option-group {
+  border: none;
+  padding: 0;
+}
+.restore-facts {
+  margin: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 8px 16px;
+}
+.restore-facts dt {
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+.restore-facts dd {
+  margin: 0;
+  font-weight: 700;
+}
+.break {
+  overflow-wrap: anywhere;
+}
+.backup-reminder {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  border: 2px dashed var(--flag-gold);
+}
+.backup-icon {
+  font-size: 1.8rem;
+}
+
 /* Mastery gate */
 .skill-bars {
   list-style: none;

@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom';
+import { BackupReminder } from '@/components/common/BackupReminder';
 import { useContent } from '@/context/ContentContext';
 import { useProgress } from '@/context/ProgressContext';
 import { useAuth } from '@/context/AuthContext';
@@ -51,6 +52,8 @@ export default function HomePage() {
           <div className="hero-emoji">🥨</div>
         </div>
       </section>
+
+      <BackupReminder />
 
       <div className="grid grid-3">
         <section className="card" aria-labelledby="lvl">

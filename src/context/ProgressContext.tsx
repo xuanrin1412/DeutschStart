@@ -28,6 +28,8 @@ interface ProgressApi {
   completeLesson(id: string, skills: Partial<Record<Skill, number>>, mastered: boolean, totalSteps: number): void;
   addStudySeconds(seconds: number): void;
   resetProgress(): void;
+  /** Replace all progress with a restored backup (already merged or sanitized by services/backup). */
+  restoreProgress(p: UserProgress): void;
 }
 
 const ProgressContext = createContext<ProgressApi | null>(null);
@@ -209,6 +211,11 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
           readings: { ...p.readings, [id]: { bestScore: Math.max(score, p.readings?.[id]?.bestScore ?? 0) } },
         })),
       addStudySeconds: (seconds) => update((p) => ({ ...p, studySeconds: p.studySeconds + seconds })),
+      restoreProgress: (p) => {
+        // No achievement toasts for a restore: everything in it was already earned.
+        prev.current = null;
+        setProgress(normalizeForToday({ ...p, userId }));
+      },
       resetProgress: () => {
         prev.current = null;
         setProgress(createEmptyProgress(userId));
