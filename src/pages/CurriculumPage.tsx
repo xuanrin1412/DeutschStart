@@ -1,15 +1,26 @@
 import { Link } from 'react-router-dom';
-import type { Lesson } from '@/types/models';
+import type { CefrLevel, Lesson } from '@/types/models';
 import { useContent } from '@/context/ContentContext';
 import { useProgress } from '@/context/ProgressContext';
-import { PageHeader } from '@/components/common/PageHeader';
 import { ProgressBar } from '@/components/ui/ProgressBar';
-import { lessonPercent, nextLesson } from '@/services/selectors';
+import { FlagDE } from '@/components/ui/GermanWord';
+import { lessonStatus, levelMastery, missingPrerequisites, nextLesson, type LessonStatus } from '@/services/curriculum';
 
-const LEVELS = [
-  { level: 'A0', eyebrow: 'Level 0 · A0', title: 'German Basics – Kiến thức nền tảng' },
-  { level: 'A1', eyebrow: 'Level 1 · A1', title: 'Cuộc sống hằng ngày' },
-] as const;
+const LEVELS: { level: CefrLevel; title: string; text: string }[] = [
+  { level: 'A0', title: 'Nền tảng tiếng Đức', text: 'Chữ cái, phát âm, những từ và câu đầu tiên. Mọi thứ được giải thích từ số 0.' },
+  { level: 'A1', title: 'Cuộc sống hằng ngày', text: 'Gia đình, mua sắm, giờ giấc, nhà ở, công việc – đủ cho kỳ thi A1.' },
+  { level: 'A2', title: 'Giao tiếp tự tin', text: 'Câu phức, quá khứ, so sánh, giải quyết tình huống hằng ngày.' },
+  { level: 'B1', title: 'Độc lập trong tiếng Đức', text: 'Nêu ý kiến, công việc, xã hội – và luyện thi B1.' },
+];
+
+const STATUS: Record<LessonStatus, { label: string; cls: string }> = {
+  mastered: { label: '✓ Đã thành thạo', cls: 'badge-good' },
+  review: { label: '⚠️ Cần ôn để mở bài sau', cls: 'badge-warn' },
+  'in-progress': { label: '→ Đang học', cls: '' },
+  available: { label: 'Sẵn sàng', cls: '' },
+  locked: { label: '🔒 Chưa mở', cls: 'badge-muted' },
+  planned: { label: 'Sắp có', cls: 'badge-muted' },
+};
 
 export default function CurriculumPage() {
   const { lessons } = useContent();
@@ -18,88 +29,98 @@ export default function CurriculumPage() {
 
   return (
     <div className="stack-lg">
-      <PageHeader
-        icon="🎓"
-        title="Học từ đầu"
-        subtitle={`${lessons.length} bài ngắn từ con số 0 đến A1, học theo thứ tự.`}
-        why="Level 0 dạy bảng chữ cái, phát âm và những câu đầu tiên. Level 1 đưa bạn vào cuộc sống hằng ngày ở Đức – đúng các chủ đề của kỳ thi A1."
-      />
+      <section className="course-hero card">
+        <h1 className="h1">
+          <FlagDE /> Học tiếng Đức từ số 0
+        </h1>
+        <p className="lesson-text">Bạn chưa cần biết bất kỳ từ tiếng Đức nào. Chúng ta sẽ học từng bước và không bỏ qua kiến thức nền tảng.</p>
+        <ul className="course-promises">
+          <li>✓ Mỗi từ mới đều được giải thích trước khi dùng</li>
+          <li>✓ Mỗi bài chỉ một khái niệm, 5–15 phút</li>
+          <li>✓ Bài sau chỉ mở khi bạn đã thật sự nắm bài trước</li>
+        </ul>
+        {next && (
+          <div className="row gap-sm center-y wrap">
+            <Link to={`/learn/${next.id}`} className="btn btn-primary">
+              {progress.lessons[next.id] ? 'Tiếp tục' : 'Bắt đầu'}: {next.icon} {next.title} →
+            </Link>
+            <span className="muted small">
+              {next.level} · Unit {next.unit}
+            </span>
+          </div>
+        )}
+      </section>
 
-      {LEVELS.map(({ level, eyebrow, title }) => {
-        const items = lessons.filter((l) => l.level === level);
+      {LEVELS.map(({ level, title, text }) => {
+        const items = lessons.filter((l) => l.level === level).sort((a, b) => a.order - b.order);
         if (!items.length) return null;
-        const done = items.filter((l) => progress.lessons[l.id]?.completed).length;
+        const planned = items.every((l) => l.available === false);
+        const m = levelMastery(level, lessons, progress);
+        const body = <UnitList lessons={items} nextId={next?.id} />;
         return (
           <section key={level} className="stack-md" aria-labelledby={`level-${level}`}>
             <div className="card level-card">
               <div className="card-head">
                 <div>
-                  <p className="eyebrow">{eyebrow}</p>
+                  <p className="eyebrow">Level {level}</p>
                   <h2 id={`level-${level}`} className="h3">
                     {title}
                   </h2>
+                  <p className="muted small">{text}</p>
                 </div>
-                <span className="badge">
-                  {done}/{items.length} bài
-                </span>
+                <span className="badge">{planned ? `${items.length} bài – sắp có` : `${m.mastered}/${m.total} bài thành thạo`}</span>
               </div>
-              <ProgressBar value={(done / items.length) * 100} label={`Tiến độ ${eyebrow}`} size="lg" showValue />
+              {!planned && <ProgressBar value={m.overall} label={`Mức thành thạo ${level}`} size="lg" showValue />}
             </div>
-            <LessonList lessons={items} nextId={next?.id} />
+            {planned ? (
+              <details className="card roadmap">
+                <summary>Xem lộ trình {level} ({items.length} bài)</summary>
+                {body}
+              </details>
+            ) : (
+              body
+            )}
           </section>
         );
       })}
-
-      <section className="card">
-        <h2 className="h3">Học song song</h2>
-        <p className="muted">Mỗi bài Level 1 đi kèm một chủ đề ngữ pháp. Kết hợp với Ngữ pháp, Đọc hiểu và Hội thoại để luyện đủ 4 kỹ năng của kỳ thi A1.</p>
-        <div className="row gap-sm wrap">
-          <Link to="/grammar" className="btn btn-ghost">
-            🧩 Ngữ pháp A1
-          </Link>
-          <Link to="/reading" className="btn btn-ghost">
-            📰 Đọc hiểu
-          </Link>
-          <Link to="/conversations" className="btn btn-ghost">
-            💬 Hội thoại
-          </Link>
-        </div>
-      </section>
     </div>
   );
 }
 
-function LessonList({ lessons, nextId }: { lessons: Lesson[]; nextId?: string }) {
+function UnitList({ lessons, nextId }: { lessons: Lesson[]; nextId?: string }) {
   const { progress } = useProgress();
+  const { lessonById } = useContent();
   return (
     <ol className="lesson-list">
       {lessons.map((l) => {
-        const pct = lessonPercent(progress, l);
+        const status = lessonStatus(l, progress);
         const isNext = nextId === l.id;
+        const missing = status === 'locked' ? lessonById.get(missingPrerequisites(l, progress)[0]) : undefined;
         return (
-          <li key={l.id} className={`lesson-item card${isNext ? ' is-next' : ''}${pct === 100 ? ' is-done' : ''}`}>
+          <li key={l.id} className={`lesson-item card${isNext ? ' is-next' : ''} is-${status}`}>
             <span className="lesson-num" aria-hidden="true">
-              {pct === 100 ? '✓' : l.order}
+              {status === 'mastered' ? '✓' : status === 'locked' || status === 'planned' ? '🔒' : l.unit}
             </span>
             <span className="lesson-icon" aria-hidden="true">
               {l.icon}
             </span>
             <div className="grow">
               <h3>
-                <span className="sr-only">Bài {l.order}: </span>
+                <span className="sr-only">Unit {l.unit}: </span>
                 {l.title} <span className="muted small" lang="de">· {l.titleDe}</span>
               </h3>
               <p className="muted small">{l.description}</p>
-              <div className="row gap-sm center-y">
-                <span className="small">⏱ {l.minutes} phút</span>
-                <div className="grow lesson-bar">
-                  <ProgressBar value={pct} label={`Tiến độ bài ${l.title}`} size="sm" tone={pct === 100 ? 'good' : 'brand'} />
-                </div>
-              </div>
+              <p className="small">
+                <span className={`badge ${STATUS[status].cls}`}>{STATUS[status].label}</span>
+                {missing && <span className="muted"> Hoàn thành Unit {missing.unit} ({missing.title}) trước</span>}
+                {status !== 'planned' && <span className="muted"> · ⏱ {l.minutes} phút</span>}
+              </p>
             </div>
-            <Link to={`/learn/${l.id}`} className={`btn ${isNext ? 'btn-primary' : 'btn-ghost'}`}>
-              {pct === 100 ? 'Ôn lại' : pct > 0 ? 'Tiếp tục' : 'Bắt đầu'}
-            </Link>
+            {status === 'planned' ? null : (
+              <Link to={`/learn/${l.id}`} className={`btn ${isNext ? 'btn-primary' : 'btn-ghost'}`}>
+                {status === 'mastered' ? 'Ôn lại' : status === 'review' ? 'Ôn để mở khóa' : status === 'in-progress' ? 'Tiếp tục' : status === 'locked' ? 'Xem trước' : 'Bắt đầu'}
+              </Link>
+            )}
           </li>
         );
       })}

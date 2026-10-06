@@ -1353,6 +1353,282 @@ mark.hl {
   width: min(360px, 100%);
 }
 
+/* Course page: unit states */
+.course-hero h1 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.course-promises {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 16px;
+  display: grid;
+  gap: 4px;
+  color: var(--ink-2);
+}
+.badge-warn {
+  background: var(--gold-soft);
+  color: var(--gold-ink);
+}
+.lesson-item.is-mastered .lesson-num {
+  background: var(--good);
+  color: #fff;
+}
+.lesson-item.is-locked,
+.lesson-item.is-planned {
+  opacity: 0.72;
+}
+.lesson-item.is-locked .lesson-num,
+.lesson-item.is-planned .lesson-num {
+  font-size: 0.85rem;
+}
+.lesson-item h3 {
+  margin-bottom: 2px;
+}
+.roadmap summary {
+  cursor: pointer;
+  font-weight: 700;
+}
+.roadmap .lesson-list {
+  margin-top: 14px;
+}
+
+/* Lesson intro */
+.prereq-list,
+.new-words {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 6px;
+}
+.prereq-list .is-ok {
+  color: var(--good);
+}
+.prereq-list .is-ok a {
+  color: inherit;
+}
+.prereq-list .is-missing {
+  color: var(--ink-2);
+}
+.new-words {
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+}
+.new-words li {
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+
+/* Teaching: word card, anatomy, grammar terms */
+.teach-card {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.teach-head {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.teach-word {
+  font-size: clamp(1.7rem, 1.3rem + 1.6vw, 2.4rem);
+  font-weight: 800;
+  margin: 0;
+}
+.teach-meaning {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0;
+}
+.teach-explain {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.anatomy {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.anatomy-parts {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.anatomy-part,
+.anatomy-sum {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 14px;
+  border-radius: var(--radius-sm);
+  border: 1.5px solid var(--line);
+  background: var(--surface);
+  font: inherit;
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+.anatomy-part {
+  cursor: pointer;
+}
+.anatomy-part:hover {
+  border-color: var(--ink);
+}
+.anatomy-part[aria-expanded='true'] {
+  border-color: var(--flag-gold);
+  box-shadow: 0 0 0 3px var(--gold-soft);
+}
+.anatomy-part small,
+.anatomy-sum small {
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+.anatomy-sum {
+  background: var(--surface-2);
+}
+.anatomy-plus {
+  align-self: center;
+  font-weight: 700;
+  color: var(--muted);
+}
+.anatomy-note {
+  margin: 0;
+  padding: 10px 14px;
+  border-left: 4px solid var(--flag-gold);
+  background: var(--gold-soft);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.term-card {
+  padding: 14px 16px;
+  border-radius: var(--radius);
+  background: var(--surface-2);
+  border: 1.5px dashed var(--line);
+}
+.term-q {
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.term-examples {
+  margin: 6px 0 0;
+  padding-left: 20px;
+}
+
+.related-words {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 0;
+}
+
+/* Mastery gate */
+.skill-bars {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 12px;
+}
+
+/* German text: every word clickable, unknown words highlighted */
+.gt-wrap {
+  position: relative;
+  display: inline;
+}
+.gt-word {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  border-radius: 3px;
+  text-decoration: none;
+}
+.gt-word:hover,
+.gt-word[aria-expanded='true'] {
+  background: var(--surface-2);
+  text-decoration: underline dotted;
+}
+.gt-lesson {
+  text-decoration: underline;
+  text-decoration-color: var(--good);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+.gt-gloss {
+  text-decoration: underline dotted;
+  text-decoration-color: var(--der);
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+.gt-unknown,
+.gt-unmapped {
+  background: var(--gold-soft);
+  box-shadow: 0 0 0 2px var(--gold-soft);
+}
+.gt-unknown::after,
+.gt-unmapped::after {
+  content: '🆕';
+  font-size: 0.6em;
+  vertical-align: super;
+  margin-left: 1px;
+}
+.gt-pop {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 6px);
+  left: 0;
+  width: min(300px, 80vw);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 14px;
+  border-radius: var(--radius);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  box-shadow: var(--shadow-lg);
+  font-size: 0.92rem;
+  font-weight: 400;
+  line-height: 1.45;
+  text-align: left;
+  white-space: normal;
+  color: var(--ink);
+}
+.gt-entry {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.gt-status {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--muted);
+}
+.gt-status-unknown,
+.gt-status-unmapped {
+  color: var(--gold-ink);
+}
+.gt-status-lesson {
+  color: var(--good);
+}
+.gt-close {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: var(--muted);
+  font-size: 0.9rem;
+  padding: 2px 4px;
+}
+
 /* ==========================================================================
    Alphabet
    ========================================================================== */

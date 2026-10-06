@@ -172,6 +172,8 @@ const rows: Row[] = [
   ['deutsch', '', 'Deutsch', '', 'noun', '/dɔɪ̯tʃ/', 'tiếng Đức', '📘', 'Ich lerne seit drei Monaten Deutsch.', 'Tôi học tiếng Đức được ba tháng.', 'countries', 'A1', 1],
   ['englisch', '', 'Englisch', '', 'noun', '/ˈɛŋlɪʃ/', 'tiếng Anh', '📗', 'Sprechen Sie Englisch?', 'Ông/bà có nói tiếng Anh không?', 'countries', 'A1', 1],
   ['vietnamesisch', '', 'Vietnamesisch', '', 'noun', '/vi̯ɛtnaˈmeːzɪʃ/', 'tiếng Việt', '📕', 'Sprichst du Vietnamesisch?', 'Bạn có nói tiếng Việt không?', 'countries', 'A1', 1],
+  ['vietnamese', 'der', 'Vietnamese', 'die Vietnamesen', 'noun', '/vi̯ɛtnaˈmeːzə/', 'người Việt Nam (nam)', '🙋‍♂️', 'Ich bin Vietnamese.', 'Tôi là người Việt Nam (nam).', 'countries', 'A1', 2, 'Người nam → der, dù tận cùng "-e". Nữ: die Vietnamesin.'],
+  ['vietnamesin', 'die', 'Vietnamesin', 'die Vietnamesinnen', 'noun', '/vi̯ɛtnaˈmeːzɪn/', 'người Việt Nam (nữ)', '🙋‍♀️', 'Ich bin Vietnamesin.', 'Tôi là người Việt Nam (nữ).', 'countries', 'A1', 2, 'Tận cùng "-in" (người nữ) → luôn là "die".'],
   ['kommen', '', 'kommen', '', 'verb', '/ˈkɔmən/', 'đến; đến từ', '🚶', 'Woher kommst du?', 'Bạn đến từ đâu?', 'countries', 'A1', 1],
   ['sprechen', '', 'sprechen', '', 'verb', '/ˈʃpʁɛçn̩/', 'nói (ngôn ngữ)', '🗣️', 'Er spricht drei Sprachen.', 'Anh ấy nói ba thứ tiếng.', 'countries', 'A1', 1],
   ['wohnen', '', 'wohnen', '', 'verb', '/ˈvoːnən/', 'sống, ở', '🏡', 'Wo wohnst du? – Ich wohne in Köln.', 'Bạn sống ở đâu? – Tôi sống ở Köln.', 'countries', 'A1', 1],

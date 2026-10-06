@@ -1,6 +1,10 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react';
 import { contentRepository, type ContentBundle } from '@/services/content/contentRepository';
 import { FullPageError, FullPageLoader } from '@/components/ui/States';
+import { buildLexicon, type LexiconIndex } from '@/services/lexicon';
+import { buildCurriculum, type CurriculumIndex } from '@/services/curriculum';
+import { terms } from '@/data/terms';
+import type { Term } from '@/types/models';
 
 interface ContentApi extends ContentBundle {
   wordById: Map<string, ContentBundle['vocabulary'][number]>;
@@ -9,6 +13,11 @@ interface ContentApi extends ContentBundle {
   sentenceById: Map<string, ContentBundle['sentences'][number]>;
   letterByChar: Map<string, ContentBundle['alphabet'][number]>;
   topicById: Map<string, ContentBundle['topics'][number]>;
+  /** Every German form → the word that explains it (unknown-word detection). */
+  lexicon: LexiconIndex;
+  /** What each lesson teaches and which lesson teaches a word. */
+  curriculum: CurriculumIndex;
+  termById: Map<string, Term>;
 }
 
 const ContentContext = createContext<ContentApi | null>(null);
@@ -30,16 +39,23 @@ export function ContentProvider({ children }: { children: ReactNode }) {
   useEffect(load, [load]);
 
   const value = useMemo<ContentApi | null>(
-    () =>
-      bundle && {
+    () => {
+      if (!bundle) return null;
+      const sentenceById = index(bundle.sentences, (s) => s.id);
+      const lexicon = buildLexicon(bundle.vocabulary);
+      return {
         ...bundle,
         wordById: index(bundle.vocabulary, (w) => w.id),
         lessonById: index(bundle.lessons, (l) => l.id),
         soundById: index(bundle.sounds, (s) => s.id),
-        sentenceById: index(bundle.sentences, (s) => s.id),
+        sentenceById,
         letterByChar: index(bundle.alphabet, (l) => l.letter),
         topicById: index(bundle.topics, (t) => t.id),
-      },
+        lexicon,
+        curriculum: buildCurriculum(bundle.lessons, lexicon, sentenceById),
+        termById: index(terms, (t) => t.id),
+      };
+    },
     [bundle],
   );
 

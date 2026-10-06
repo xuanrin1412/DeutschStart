@@ -7,6 +7,7 @@ import { PageHeader } from '@/components/common/PageHeader';
 import { EmptyState } from '@/components/ui/States';
 import { AudioButton } from '@/components/ui/AudioButton';
 import { PhraseList } from '@/components/common/PhraseList';
+import { GermanText } from '@/components/text/GermanText';
 import { QuizRunner } from '@/components/exercises/QuizRunner';
 import { audioService } from '@/services/audio/audioService';
 
@@ -75,7 +76,7 @@ function ReadingView({ reading }: { reading: ReadingText }) {
         {reading.text.map((para, i) => (
           <div key={i} className={`reading-para${playing === i ? ' is-playing' : ''}`}>
             <div className="grow">
-              <p lang="de">{para}</p>
+              <GermanText as="p" text={para} />
               {showVi && <p className="reading-vi">{reading.textVi[i]}</p>}
             </div>
             <AudioButton text={para} size="sm" />

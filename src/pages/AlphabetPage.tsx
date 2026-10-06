@@ -97,7 +97,7 @@ export default function AlphabetPage() {
           Khi đọc email hoặc tên qua điện thoại, người Đức thường nói <em lang="de">„A wie Anton, B wie Berta…“</em>. Hãy tập đánh vần tên bạn: <strong lang="de">N – G – U – Y – E – N</strong>.
         </p>
         <div className="row gap-sm wrap">
-          <Link to="/learn/alphabet" className="btn btn-ghost">
+          <Link to="/learn/a0-alphabet" className="btn btn-ghost">
             🎓 Học bài Bảng chữ cái
           </Link>
           <Link to="/pronunciation" className="btn btn-ghost">

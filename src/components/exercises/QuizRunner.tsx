@@ -144,7 +144,7 @@ export function QuizRunner({ questions, record = true, onFinish, onRestart, onAn
   return (
     <div className={`quiz${compact ? ' quiz-compact' : ''}`}>
       <div className="quiz-top">
-        <span className="badge">{TYPE_LABEL[q.type]}</span>
+        <span className="badge">{q.round ?? TYPE_LABEL[q.type]}</span>
         <span className="muted small">
           Câu {index + 1}/{questions.length}
         </span>

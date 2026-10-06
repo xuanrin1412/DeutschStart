@@ -4,9 +4,9 @@ type P = Parameters<Achievement['isUnlocked']>[0];
 
 const learnedCount = (p: P) => Object.values(p.vocabulary).filter((v) => v.state !== 'new').length;
 
-/** Level 1 lesson ids start with "a1-"; everything else is Level 0. */
-const completedLessons = (p: P, level1: boolean) =>
-  Object.entries(p.lessons).filter(([id, l]) => l.completed && id.startsWith('a1-') === level1).length;
+/** Lessons of a level (ids start with "a0-" / "a1-") whose mastery gate is passed. */
+const masteredLessons = (p: P, prefix: 'a0-' | 'a1-') =>
+  Object.entries(p.lessons).filter(([id, l]) => id.startsWith(prefix) && (l.mastered || (l.completed && !l.skills))).length;
 
 const completedGrammar = (p: P) => Object.values(p.grammarLessons).filter((g) => g.completed).length;
 
@@ -18,8 +18,8 @@ export const achievements: Achievement[] = [
   { id: 'words-500', icon: '📘', title: 'Năm trăm từ', description: 'Học 500 từ vựng – gần đủ vốn từ A1!', isUnlocked: (p) => learnedCount(p) >= 500 },
   { id: 'alphabet', icon: '🔤', title: 'Bậc thầy chữ cái', description: 'Xem hết 30 chữ cái.', isUnlocked: (p) => p.alphabetSeen.length >= 30 },
   { id: 'first-lesson', icon: '🎓', title: 'Bài học đầu tiên', description: 'Hoàn thành một bài học.', isUnlocked: (p) => Object.values(p.lessons).some((l) => l.completed) },
-  { id: 'level0', icon: '🚀', title: 'Hoàn thành A0', description: 'Hoàn thành cả 12 bài Level 0.', isUnlocked: (p) => completedLessons(p, false) >= 12 },
-  { id: 'level1', icon: '🏆', title: 'Hoàn thành Level 1', description: 'Hoàn thành cả 16 bài Level 1 – A1.', isUnlocked: (p) => completedLessons(p, true) >= 16 },
+  { id: 'level0', icon: '🚀', title: 'Hoàn thành A0', description: 'Thành thạo cả 36 bài nền tảng A0.', isUnlocked: (p) => masteredLessons(p, 'a0-') >= 36 },
+  { id: 'level1', icon: '🏆', title: 'Hoàn thành A1', description: 'Thành thạo cả 17 bài A1.', isUnlocked: (p) => masteredLessons(p, 'a1-') >= 17 },
   { id: 'grammar-10', icon: '🧠', title: 'Chăm chỉ ngữ pháp', description: 'Hoàn thành 10 bài ngữ pháp.', isUnlocked: (p) => completedGrammar(p) >= 10 },
   { id: 'streak-3', icon: '🔥', title: 'Ba ngày liền', description: 'Chuỗi học 3 ngày.', isUnlocked: (p) => p.streak.longest >= 3 },
   { id: 'streak-7', icon: '⚡', title: 'Một tuần kiên trì', description: 'Chuỗi học 7 ngày.', isUnlocked: (p) => p.streak.longest >= 7 },

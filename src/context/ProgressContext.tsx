@@ -1,5 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
-import type { Article, Question, UserProgress, UserVocabulary } from '@/types/models';
+import type { Article, Question, Skill, UserProgress, UserVocabulary } from '@/types/models';
 import { createEmptyProgress, progressRepository } from '@/services/progressRepository';
 import * as srs from '@/services/srs';
 import { achievements, dailyGoals } from '@/data/achievements';
@@ -24,11 +24,23 @@ interface ProgressApi {
   markLetterSeen(letter: string): void;
   completeGrammarLesson(id: string, score: number): void;
   completeReading(id: string, score: number): void;
+  /** Save a finished lesson practice: best score per skill is kept; mastered unlocks the next lessons. */
+  completeLesson(id: string, skills: Partial<Record<Skill, number>>, mastered: boolean, totalSteps: number): void;
   addStudySeconds(seconds: number): void;
   resetProgress(): void;
 }
 
 const ProgressContext = createContext<ProgressApi | null>(null);
+
+/** The skill a question measures: its own tag, or derived from its type and category. */
+export function skillOf(q: Question): Skill {
+  if (q.skill) return q.skill;
+  if (q.type === 'article') return 'article';
+  if (q.category === 'listening') return 'listening';
+  if (q.type === 'ordering') return 'sentence';
+  if (q.category === 'grammar') return 'grammar';
+  return 'vocab';
+}
 
 /** New day → fresh daily challenge; missed a day → streak resets. */
 function normalizeForToday(p: UserProgress): UserProgress {
@@ -127,6 +139,9 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
           else if (q.category === 'grammar' || q.category === 'article') next = bump({ ...next, grammar: stat(next.grammar, correct) }, 'grammar');
           else next = bump({ ...next, quiz: stat(next.quiz, correct) }, 'quiz');
 
+          const skill = skillOf(q);
+          next = { ...next, skillStats: { ...next.skillStats, [skill]: stat(next.skillStats?.[skill] ?? { correct: 0, total: 0 }, correct) } };
+
           if (q.wordId) next = withWord(next, q.wordId, (uv) => (correct ? { ...uv, correct: uv.correct + 1 } : srs.lapse(uv)));
 
           const existing = next.mistakes[q.id];
@@ -177,6 +192,17 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
           ...p,
           grammarLessons: { ...p.grammarLessons, [id]: { completed: true, bestScore: Math.max(score, p.grammarLessons[id]?.bestScore ?? 0) } },
         })),
+      completeLesson: (id, skills, mastered, totalSteps) =>
+        update((p) => {
+          const prevL = p.lessons[id];
+          const best = { ...prevL?.skills };
+          for (const [k, v] of Object.entries(skills) as [Skill, number][]) best[k] = Math.max(v, best[k] ?? 0);
+          return {
+            ...p,
+            currentLessonId: id,
+            lessons: { ...p.lessons, [id]: { step: totalSteps, totalSteps, completed: true, updatedAt: new Date().toISOString(), skills: best, mastered: mastered || prevL?.mastered || false } },
+          };
+        }),
       completeReading: (id, score) =>
         update((p) => ({
           ...p,

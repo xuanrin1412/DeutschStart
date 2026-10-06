@@ -2,6 +2,7 @@ import type { CefrLevel, Lesson, ScoreStat, UserProgress } from '@/types/models'
 import type { ContentBundle } from './content/contentRepository';
 import { dailyGoals } from '@/data/achievements';
 import { dueQueue } from './srs';
+import { levelMastery, nextLesson as nextInCurriculum } from './curriculum';
 
 export const learnedWordIds = (p: UserProgress) => Object.values(p.vocabulary).filter((v) => v.state !== 'new').map((v) => v.wordId);
 export const masteredCount = (p: UserProgress) => Object.values(p.vocabulary).filter((v) => v.state === 'mastered').length;
@@ -19,25 +20,21 @@ export function dailyPercent(p: UserProgress) {
   return Math.round((sum / dailyGoals.length) * 100);
 }
 
+/** The level of the lesson the learner should study next. */
 export function currentLevel(p: UserProgress, c: ContentBundle): CefrLevel {
-  const a0 = c.lessons.filter((l) => l.level === 'A0');
-  const done = completedLessons(p);
-  return a0.every((l) => done.includes(l.id)) ? 'A1' : 'A0';
+  return nextInCurriculum(p, c.lessons)?.level ?? 'A1';
 }
 
-/** Overall A1 readiness: vocabulary 40%, Level 0 lessons 30%, grammar 30%. */
+/** Readiness for A1: mastery of every A0 and A1 unit (a unit counts fully only after its mastery gate). */
 export function a1Progress(p: UserProgress, c: ContentBundle) {
-  const vocab = learnedWordIds(p).length / Math.max(1, c.vocabulary.length);
-  const lessons = completedLessons(p).length / Math.max(1, c.lessons.length);
-  const available = c.grammar.filter((g) => g.available);
-  const grammar = available.filter((g) => p.grammarLessons[g.id]?.completed).length / Math.max(1, available.length);
-  return Math.round((vocab * 0.4 + lessons * 0.3 + grammar * 0.3) * 100);
+  const a0 = levelMastery('A0', c.lessons, p);
+  const a1 = levelMastery('A1', c.lessons, p);
+  return Math.round((a0.overall * a0.total + a1.overall * a1.total) / Math.max(1, a0.total + a1.total));
 }
 
+/** The lesson to study next (respects prerequisites and mastery). */
 export function nextLesson(p: UserProgress, lessons: Lesson[]): Lesson | undefined {
-  const current = lessons.find((l) => l.id === p.currentLessonId);
-  if (current && !p.lessons[current.id]?.completed) return current;
-  return lessons.find((l) => !p.lessons[l.id]?.completed);
+  return nextInCurriculum(p, lessons);
 }
 
 export const lessonPercent = (p: UserProgress, l: Lesson) => {

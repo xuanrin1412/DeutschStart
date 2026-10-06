@@ -39,7 +39,7 @@ export default function HomePage() {
             <Link className="btn btn-primary btn-lg" to={lesson ? `/learn/${lesson.id}` : '/review'}>
               {started ? 'Tiếp tục học' : 'Bắt đầu học'} →
             </Link>
-            <Link className="btn btn-ghost btn-lg" to="/learn/alphabet">
+            <Link className="btn btn-ghost btn-lg" to="/learn/a0-alphabet">
               Bắt đầu từ đầu
             </Link>
           </div>
@@ -62,7 +62,7 @@ export default function HomePage() {
           </div>
           <p className="stat-big">{pct}%</p>
           <ProgressBar value={pct} label="Tiến độ A1" size="lg" />
-          <p className="muted small">Từ vựng, bài Level 0 và ngữ pháp cơ bản.</p>
+          <p className="muted small">Mức thành thạo các bài A0 và A1.</p>
           <Link to="/progress" className="link">
             Xem chi tiết →
           </Link>
@@ -102,7 +102,7 @@ export default function HomePage() {
               </span>
               <div className="grow">
                 <h2 id="cont" className="h3">
-                  Bài {lesson.order}: {lesson.title}
+                  {lesson.level} · Unit {lesson.unit}: {lesson.title}
                 </h2>
                 <p className="muted small">
                   {lesson.titleDe} · ⏱ {lesson.minutes} phút

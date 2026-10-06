@@ -7,7 +7,8 @@
     "dev": "vite",
     "build": "tsc --noEmit -p . && vite build",
     "preview": "vite preview",
-    "typecheck": "tsc --noEmit -p ."
+    "typecheck": "tsc --noEmit -p .",
+    "check:content": "npx --yes tsx scripts/check-content.mts"
   },
   "dependencies": {
     "react": "^18.3.1",

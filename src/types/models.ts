@@ -103,10 +103,68 @@ export interface Phrase {
   emoji?: string;
 }
 
+/* ---------- Lexicon: every German word the site can explain ---------- */
+
+/**
+ * A teachable unit of German: a word (der Mann, sein, ich), a fixed phrase (Guten Morgen)
+ * or a grammar word (die, ein). `forms` are every spelling that maps to it (bin/bist/ist → sein).
+ */
+export interface Lexeme {
+  id: string;
+  /** Display form: "die Katze", "sein", "Guten Morgen". */
+  lemma: string;
+  /** Lower-case forms found in texts. Multi-word forms ("guten morgen") are matched before single words. */
+  forms: string[];
+  meaning: string; // Vietnamese
+  type: WordType | 'article' | 'name';
+  /** Short Vietnamese explanation for the word anatomy / popover ("die = mạo từ xác định, dùng với danh từ giống cái"). */
+  explanation?: string;
+  /** Linked vocabulary entry (full card with image, IPA, plural…). */
+  vocabId?: string;
+}
+
+/** Grammar terminology explained from zero ("Danh từ là gì?"). */
+export interface Term {
+  id: string;
+  vi: string; // "danh từ"
+  de: string; // "das Nomen"
+  question: string; // "Danh từ là gì?"
+  explanation: string;
+  examples?: string[];
+}
+
+/* ---------- Curriculum ---------- */
+
+/** Skills measured in every lesson; the mastery gate checks each one separately. */
+export type Skill = 'vocab' | 'article' | 'listening' | 'sentence' | 'grammar' | 'pronunciation';
+
+/** A German sentence used in a lesson. `gloss` gives inline meanings for a word not taught yet. */
+export interface LessonExample {
+  de: string;
+  vi: string;
+  note?: string;
+  gloss?: Record<string, string>;
+}
+
+/** A lesson-specific grammar question (fill-in / choice), checked under the "grammar" skill unless set. */
+export interface LessonQuestion {
+  prompt: string;
+  display?: string;
+  options: string[];
+  answer: string;
+  explanation: string;
+  skill?: Skill;
+}
+
 /** A curriculum lesson is a sequence of steps rendered by the generic lesson player. */
 export type LessonStep =
   | { type: 'intro'; title: string; body: string; why?: string }
   | { type: 'tip'; title: string; body: string }
+  /** One concept, explained simply. `terms` shows grammar terminology cards first ("Động từ là gì?"). */
+  | { type: 'concept'; title: string; body: string[]; terms?: string[]; table?: { headers: string[]; rows: string[][]; audioCols?: number[] } }
+  /** New words, taught one card at a time with anatomy (die + Katze), IPA, audio, plural and a controlled example. */
+  | { type: 'words'; title: string; words: string[]; examples?: Record<string, LessonExample> }
+  | { type: 'examples'; title: string; items: LessonExample[] }
   | { type: 'phrases'; title: string; items: Phrase[] }
   | { type: 'letters'; title: string; letters: string[] }
   | { type: 'sounds'; title: string; soundIds: string[] }
@@ -116,13 +174,34 @@ export type LessonStep =
 export interface Lesson {
   id: string;
   level: CefrLevel;
+  /** Global order across all levels. */
   order: number;
+  /** Number within the level ("Unit 3"). */
+  unit: number;
   title: string;
   titleDe: string;
   description: string;
   minutes: number;
   icon: string;
+  /** "Hôm nay bạn sẽ học…" */
+  objective: string;
+  /** Lessons that must be mastered first. */
+  prerequisites: string[];
+  /** Lexeme ids introduced in this lesson (A1 lessons derive them automatically). */
+  teaches: string[];
+  /** Grammar concepts introduced (shown in the completion summary). */
+  concepts?: string[];
+  /** Sentence patterns learned ("Ich bin …"). */
+  patterns?: string[];
+  /** Area for progress tracking. */
+  area: 'alphabet' | 'pronunciation' | 'phrases' | 'grammar' | 'vocabulary' | 'communication';
   steps: LessonStep[];
+  /** Extra hand-written questions for the practice rounds. */
+  questions?: LessonQuestion[];
+  /** Sentences used for comprehension / construction rounds (all words must be known by then). */
+  sentences?: LessonExample[];
+  /** Planned lessons (A2, B1 roadmap) are listed but cannot be opened yet. */
+  available?: boolean;
 }
 
 export type TokenRole = 'subject' | 'verb' | 'time' | 'object' | 'place' | 'negation' | 'question' | 'other' | 'verb2';
@@ -286,6 +365,10 @@ export interface Question {
   /** With auto-speak on: say `audioText` when the question appears / right after it is answered. */
   speakOnShow?: boolean;
   speakOnAnswer?: boolean;
+  /** Skill this question measures (lesson mastery + adaptive review). Derived from type/category when absent. */
+  skill?: Skill;
+  /** Shown instead of the question-type badge, e.g. "Vòng 2 · Mạo từ". */
+  round?: string;
 }
 
 /* ---------- Users & progress ---------- */
@@ -329,6 +412,10 @@ export interface LessonProgress {
   totalSteps: number;
   completed: boolean;
   updatedAt: string;
+  /** Best first-try score per skill in this lesson's practice (0–100). */
+  skills?: Partial<Record<Skill, number>>;
+  /** All mastery thresholds reached → next lessons unlock. */
+  mastered?: boolean;
 }
 
 export interface DailyChallengeState {
@@ -354,6 +441,8 @@ export interface UserProgress {
   grammarLessons: Record<string, { completed: boolean; bestScore: number }>;
   /** Best score per reading text. Optional: progress saved before this field existed has none. */
   readings?: Record<string, { bestScore: number }>;
+  /** Accuracy per skill across the whole site – drives adaptive review. Optional for older saved progress. */
+  skillStats?: Partial<Record<Skill, ScoreStat>>;
   mistakes: Record<string, Mistake>;
   alphabetSeen: string[];
   currentLessonId?: string;

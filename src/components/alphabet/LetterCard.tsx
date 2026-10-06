@@ -3,7 +3,12 @@ import { AudioButton } from '@/components/ui/AudioButton';
 import { WordImage } from '@/components/ui/WordImage';
 import { Ipa } from '@/components/ui/GermanWord';
 
-export function LetterCard({ letter }: { letter: AlphabetLetter }) {
+/**
+ * One letter: name, IPA, a picture word and an example sentence.
+ * `inLesson`: the picture word is only there to hear the sound, and the example sentence is hidden
+ * because it uses words a beginner has not been taught yet.
+ */
+export function LetterCard({ letter, inLesson = false }: { letter: AlphabetLetter; inLesson?: boolean }) {
   return (
     <div className="letter-card">
       <div className="letter-card-top">
@@ -37,15 +42,19 @@ export function LetterCard({ letter }: { letter: AlphabetLetter }) {
         </div>
       </div>
 
-      <div className="example">
-        <div className="row gap-sm center-y">
-          <p lang="de" className="example-de">
-            {letter.example}
-          </p>
-          <AudioButton text={letter.example} size="sm" />
+      {inLesson ? (
+        <p className="muted small">Từ ví dụ chỉ để nghe âm của chữ – bạn chưa cần nhớ từ này.</p>
+      ) : (
+        <div className="example">
+          <div className="row gap-sm center-y">
+            <p lang="de" className="example-de">
+              {letter.example}
+            </p>
+            <AudioButton text={letter.example} size="sm" />
+          </div>
+          <p className="example-vi">{letter.exampleVi}</p>
         </div>
-        <p className="example-vi">{letter.exampleVi}</p>
-      </div>
+      )}
 
       {letter.tip && (
         <div className="tip">

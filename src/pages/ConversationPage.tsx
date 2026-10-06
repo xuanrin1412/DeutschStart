@@ -8,6 +8,7 @@ import { EmptyState } from '@/components/ui/States';
 import { AudioButton } from '@/components/ui/AudioButton';
 import { SpeechPractice } from '@/components/pronunciation/SpeechPractice';
 import { PhraseList } from '@/components/common/PhraseList';
+import { GermanText } from '@/components/text/GermanText';
 import { audioService } from '@/services/audio/audioService';
 
 export default function ConversationPage() {
@@ -66,9 +67,7 @@ function ConversationView({ convo }: { convo: Conversation }) {
           {convo.lines.map((l, i) => (
             <li key={i} className={`bubble bubble-${l.speaker}${playingLine === i ? ' is-playing' : ''}`}>
               <span className="bubble-who">{convo.roles[l.speaker]}</span>
-              <p lang="de" className="bubble-de">
-                {l.de}
-              </p>
+              <GermanText as="p" className="bubble-de" text={l.de} />
               {showVi && <p className="bubble-vi">{l.vi}</p>}
               <div className="row gap-xs">
                 <AudioButton text={l.de} size="sm" />
