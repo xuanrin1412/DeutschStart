@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { BOTTOM_NAV, MORE_NAV } from './nav';
+import { FavoriteCount } from '@/components/lesson/FavoriteStar';
 
 export function BottomNav() {
   const [more, setMore] = useState(false);
@@ -25,6 +26,7 @@ export function BottomNav() {
                 <Link key={n.to} to={n.to} className="sheet-item">
                   <span aria-hidden="true">{n.icon}</span>
                   {n.label}
+                  {n.count === 'favorites' && <FavoriteCount />}
                 </Link>
               ))}
             </div>

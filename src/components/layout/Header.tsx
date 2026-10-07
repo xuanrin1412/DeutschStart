@@ -1,6 +1,7 @@
 import { useState, type FormEvent } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { MAIN_NAV } from './nav';
+import { FavoriteCount } from '@/components/lesson/FavoriteStar';
 import { useProgress, isDailyComplete } from '@/context/ProgressContext';
 import { useAuth } from '@/context/AuthContext';
 import { usePopover } from '@/hooks/usePopover';
@@ -150,6 +151,7 @@ export function Header() {
         {MAIN_NAV.map((n) => (
           <NavLink key={n.to} to={n.to} end={n.end} className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
             <span aria-hidden="true">{n.icon}</span> {n.label}
+            {n.count === 'favorites' && <FavoriteCount />}
           </NavLink>
         ))}
       </nav>

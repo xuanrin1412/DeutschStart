@@ -441,6 +441,8 @@ export interface UserProgress {
   grammarLessons: Record<string, { completed: boolean; bestScore: number }>;
   /** Best score per reading text. Optional: progress saved before this field existed has none. */
   readings?: Record<string, { bestScore: number }>;
+  /** Bookmarked lessons: lesson id → ISO date it was saved. Only a bookmark – never changes progress. */
+  favorites?: Record<string, string>;
   /** Accuracy per skill across the whole site – drives adaptive review. Optional for older saved progress. */
   skillStats?: Partial<Record<Skill, ScoreStat>>;
   mistakes: Record<string, Mistake>;

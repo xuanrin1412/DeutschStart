@@ -33,6 +33,7 @@ const ProgressPage = lazy(() => import('@/pages/ProgressPage'));
 const SearchPage = lazy(() => import('@/pages/SearchPage'));
 const ProfilePage = lazy(() => import('@/pages/ProfilePage'));
 const SettingsPage = lazy(() => import('@/pages/SettingsPage'));
+const FavoritesPage = lazy(() => import('@/pages/FavoritesPage'));
 const LoginPage = lazy(() => import('@/pages/auth/LoginPage'));
 const RegisterPage = lazy(() => import('@/pages/auth/RegisterPage'));
 const ResetPasswordPage = lazy(() => import('@/pages/auth/ResetPasswordPage'));
@@ -80,6 +81,7 @@ export default function App() {
                       <Route path="search" element={<SearchPage />} />
                       <Route path="profile" element={<ProfilePage />} />
                       <Route path="settings" element={<SettingsPage />} />
+                      <Route path="favorites" element={<FavoritesPage />} />
                       <Route path="*" element={<NotFoundPage />} />
                     </Route>
                     <Route path="login" element={<LoginPage />} />

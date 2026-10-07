@@ -14,6 +14,7 @@ import { SoundCard } from '@/components/pronunciation/SoundCard';
 import { SentenceSet } from '@/components/exercises/SentenceSet';
 import { QuizRunner } from '@/components/exercises/QuizRunner';
 import { GermanText } from '@/components/text/GermanText';
+import { FavoriteStar } from '@/components/lesson/FavoriteStar';
 import { ExampleLine, TeachWord, TermCard } from '@/components/lesson/TeachWord';
 import { isMastered, lessonStatus, MASTERY, meetsMastery, missingPrerequisites, SKILL_LABELS, weakSkills } from '@/services/curriculum';
 import { buildPractice, buildWarmup, scoreBySkill, type PracticeContext } from '@/services/lessonPractice';
@@ -28,6 +29,9 @@ export default function LessonPage() {
     return (
       <EmptyState icon="🔒" title={`${lesson.title} – sắp ra mắt`} action={{ label: 'Về lộ trình học', to: '/learn' }}>
         {lesson.objective}
+        <span className="row gap-sm center-y center">
+          <FavoriteStar lesson={lesson} /> <span className="small muted">Lưu bài này để học khi ra mắt</span>
+        </span>
       </EmptyState>
     );
   return <LessonFlow key={lesson.id} lesson={lesson} />;
@@ -110,9 +114,12 @@ function LessonFlow({ lesson }: { lesson: Lesson }) {
       <p className="eyebrow">
         {lesson.level} · Unit {lesson.unit} · <span lang="de">{lesson.titleDe}</span> · ⏱ {lesson.minutes} phút
       </p>
-      <h1 className="h2">
-        {lesson.icon} {lesson.title}
-      </h1>
+      <div className="row gap-sm center-y space-between">
+        <h1 className="h2">
+          {lesson.icon} {lesson.title}
+        </h1>
+        <FavoriteStar lesson={lesson} />
+      </div>
     </div>
   );
 

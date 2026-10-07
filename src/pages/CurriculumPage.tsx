@@ -1,4 +1,6 @@
+import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { FavoriteStar } from '@/components/lesson/FavoriteStar';
 import type { CefrLevel, Lesson } from '@/types/models';
 import { useContent } from '@/context/ContentContext';
 import { useProgress } from '@/context/ProgressContext';
@@ -22,10 +24,26 @@ const STATUS: Record<LessonStatus, { label: string; cls: string }> = {
   planned: { label: 'Sắp có', cls: 'badge-muted' },
 };
 
+type Filter = 'all' | 'saved' | 'todo' | 'done';
+const FILTERS: { id: Filter; label: string }[] = [
+  { id: 'all', label: 'Tất cả' },
+  { id: 'saved', label: '⭐ Đã lưu' },
+  { id: 'todo', label: 'Chưa học' },
+  { id: 'done', label: 'Đã hoàn thành' },
+];
+
 export default function CurriculumPage() {
   const { lessons } = useContent();
   const { progress } = useProgress();
   const next = nextLesson(progress, lessons);
+  const [filter, setFilter] = useState<Filter>('all');
+  const keep = (l: Lesson) => {
+    if (filter === 'saved') return !!progress.favorites?.[l.id];
+    const status = lessonStatus(l, progress);
+    const done = status === 'mastered' || status === 'review';
+    return filter === 'done' ? done : filter === 'todo' ? !done : true;
+  };
+  const anyShown = lessons.some(keep);
 
   return (
     <div className="stack-lg">
@@ -51,10 +69,24 @@ export default function CurriculumPage() {
         )}
       </section>
 
+      <div className="chips course-filter" role="group" aria-label="Lọc bài học">
+        {FILTERS.map((f) => (
+          <button key={f.id} className={`chip-btn${filter === f.id ? ' active' : ''}`} aria-pressed={filter === f.id} onClick={() => setFilter(f.id)}>
+            {f.label}
+          </button>
+        ))}
+      </div>
+      {!anyShown && (
+        <p className="muted center-text" role="status">
+          {filter === 'saved' ? 'Bạn chưa lưu bài nào. Nhấn ☆ ở một bài học để lưu lại.' : 'Không có bài học nào phù hợp.'}
+        </p>
+      )}
+
       {LEVELS.map(({ level, title, text }) => {
-        const items = lessons.filter((l) => l.level === level).sort((a, b) => a.order - b.order);
+        const all = lessons.filter((l) => l.level === level).sort((a, b) => a.order - b.order);
+        const items = all.filter(keep);
         if (!items.length) return null;
-        const planned = items.every((l) => l.available === false);
+        const planned = all.every((l) => l.available === false);
         const m = levelMastery(level, lessons, progress);
         const body = <UnitList lessons={items} nextId={next?.id} />;
         return (
@@ -68,11 +100,11 @@ export default function CurriculumPage() {
                   </h2>
                   <p className="muted small">{text}</p>
                 </div>
-                <span className="badge">{planned ? `${items.length} bài – sắp có` : `${m.mastered}/${m.total} bài thành thạo`}</span>
+                <span className="badge">{planned ? `${all.length} bài – sắp có` : `${m.mastered}/${m.total} bài thành thạo`}</span>
               </div>
               {!planned && <ProgressBar value={m.overall} label={`Mức thành thạo ${level}`} size="lg" showValue />}
             </div>
-            {planned ? (
+            {planned && filter === 'all' ? (
               <details className="card roadmap">
                 <summary>Xem lộ trình {level} ({items.length} bài)</summary>
                 {body}
@@ -116,6 +148,7 @@ function UnitList({ lessons, nextId }: { lessons: Lesson[]; nextId?: string }) {
                 {status !== 'planned' && <span className="muted"> · ⏱ {l.minutes} phút</span>}
               </p>
             </div>
+            <FavoriteStar lesson={l} />
             {status === 'planned' ? null : (
               <Link to={`/learn/${l.id}`} className={`btn ${isNext ? 'btn-primary' : 'btn-ghost'}`}>
                 {status === 'mastered' ? 'Ôn lại' : status === 'review' ? 'Ôn để mở khóa' : status === 'in-progress' ? 'Tiếp tục' : status === 'locked' ? 'Xem trước' : 'Bắt đầu'}

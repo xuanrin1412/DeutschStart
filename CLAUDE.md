@@ -27,7 +27,7 @@ npm run check:content  # dependency rule + practice rounds + dictionary coverage
 | Feature | Route(s) | Notes |
 |---|---|---|
 | Dashboard | `/` | Hero, A1 progress %, streak, words due for review, current lesson, daily challenge, word of the day, quick links |
-| Start from zero | `/learn`, `/learn/:lessonId` | 36 A0 units (ids `a0-*`) + 17 A1 units (`a1-*`) + 26 planned A2/B1 units. Each lesson: goal + prerequisites → optional warm-up review → learn steps (concepts, one word card at a time, examples) → practice rounds → mastery gate. Units unlock only when their prerequisites are mastered |
+| Start from zero | `/learn`, `/learn/:lessonId` | 36 A0 units (ids `a0-*`) + 17 A1 units (`a1-*`) + 26 planned A2/B1 units. Each lesson: goal + prerequisites → optional warm-up review → learn steps (concepts, one word card at a time, examples) → practice rounds → mastery gate. Units unlock only when their prerequisites are mastered. Filter chips: Tất cả / ⭐ Đã lưu / Chưa học / Đã hoàn thành; every unit card (also locked and planned) and every lesson header has a ☆/⭐ bookmark star |
 | Alphabet | `/alphabet` | A–Z + Ä Ö Ü ß. A modal card per letter: name + IPA, picture word, example, Vietnamese tip; "play whole alphabet" button |
 | Vocabulary | `/vocabulary`, `/vocabulary/topic/:topicId`, `/vocabulary/word/:wordId` | 674 words (A1 word list), 24 topics, filters by review state, topic quiz, full word card: article anatomy (die + Katze), gender, plural, "Vì sao là die?", clickable example, related words, the lesson that teaches it |
 | Vocabulary practice | `/vocabulary/practice` | Directions (DE→VI, VI→DE, listen, fill the sentence) × multiple choice / typing with hint; word groups; wrong words repeat; saved settings |
@@ -41,12 +41,14 @@ npm run check:content  # dependency rule + practice rounds + dictionary coverage
 | Reading | `/reading`, `/reading/:readingId` | 10 A1-exam-style texts (email, SMS, signs, ads, timetable) with audio, translation toggle, glossary, Richtig/Falsch questions; best score saved |
 | Quiz | `/quiz?type=` | multiple-choice, article, listening, image, translation (typed input), ordering, mixed |
 | Mistake book | `/mistakes` | Wrong answers stored as snapshots with a count; "Ôn lại" asks them again, and a correct answer resolves the mistake |
-| Progress | `/progress` | Level, mastery per level by area and by skill (weakest skills link to practice), stat tiles, article accuracy, review-state bars, achievements, reset progress (with confirmation) |
+| Progress | `/progress` | Level, mastery per level by area and by skill (weakest skills link to practice), stat tiles, article accuracy, review-state bars, achievements |
+| Saved lessons | `/favorites` | Lessons bookmarked with the star: level filter, sort (newest, oldest, level, progress), status per lesson, "Học ngay". A bookmark never changes progress, unlocking or mastery |
+| Settings & data | `/settings` | Export progress to a JSON file, import it (replace or merge), backup reminder, reset progress (checkbox confirmation) |
 | Search | `/search?q=` | German or Vietnamese, accents optional ("qua tao" → der Apfel) |
 | Accounts | `/login`, `/register`, `/reset-password`, `/profile` | Validated forms; guest progress moves into a newly registered account |
 
 **Navigation**
-- On desktop, a header shows the logo, search box, streak, notifications and profile menu, with a 9-item nav bar below it.
+- On desktop, a header shows the logo, search box, streak, notifications and profile menu, with a 10-item nav bar below it ("Đã lưu" shows the number of saved lessons). Between 900 and 1180px the nav icons are hidden so every item fits.
 - Below 900px, the nav bar is replaced by a bottom bar: 4 items plus a "Thêm" (more) sheet.
 
 ## Project structure
@@ -73,6 +75,7 @@ src/
     content/contentRepository.ts  # ContentRepository interface; local impl dynamic-imports data/
     auth/authService.ts           # AuthService interface; LocalAuthService (SHA-256 hash, demo only)
     progressRepository.ts         # ProgressRepository interface; localStorage impl; createEmptyProgress
+    backup.ts                     # Export / import of progress: versioned file + MIGRATIONS, sanitize, mergeProgress (more advanced state wins)
     audio/audioService.ts         # AudioService: recorded file first → browser TTS (de-DE) fallback
     speech/speechRecognition.ts   # SpeechRecognizer (Web Speech API) + similarity()
     srs.ts                        # Spaced repetition: intervals [1,3,7,14,30] days, grading, due queue
@@ -117,6 +120,7 @@ The path alias `@/` maps to `src/`; it is configured in both `tsconfig.json` and
   - The provided functions are `learnWord`, `gradeWord`, `markKnown`, `toggleSaved`, `recordAnswer`, `recordPronunciation`, `updateLesson`, `completeLesson` (best skill scores + mastered), `completeGrammarLesson` and a few more.
   - Every update runs `normalizeForToday` first: it resets the daily challenge on a new day and resets the streak to 0 if a day was missed.
   - Every update then runs `applyRewards`: completing the daily challenge adds 1 to the streak, and newly earned achievements are unlocked. An effect shows the toasts and saves.
+- **Favorites** are `progress.favorites` (lesson id → ISO date saved). `toggleFavorite` writes them with `setProgress` directly, not `update`, so a bookmark is never study activity: no rewards, no streak, no unlocking. They are exported, restored and merged (union, earliest date) by `backup.ts`.
 - **`recordAnswer(question, correct, userAnswer)` is the single entry point for exercise results.** It:
   - updates per-skill stats (`skillStats`, used for adaptive practice) and per-article stats;
   - adds to the daily counters;

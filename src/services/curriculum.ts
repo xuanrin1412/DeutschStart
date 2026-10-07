@@ -114,6 +114,16 @@ export function knownLexemes(progress: UserProgress, cur: CurriculumIndex): Set<
 
 export type LessonStatus = 'mastered' | 'review' | 'in-progress' | 'available' | 'locked' | 'planned';
 
+/** Status of a lesson as shown next to a bookmark (and its badge colour). */
+export const STATUS_LABELS: Record<LessonStatus, { fav: string; cls: string }> = {
+  mastered: { fav: '✓ Đã hoàn thành', cls: 'badge-good' },
+  review: { fav: '🔄 Cần ôn lại', cls: 'badge-warn' },
+  'in-progress': { fav: '▶️ Đang học', cls: '' },
+  available: { fav: '○ Chưa học', cls: '' },
+  locked: { fav: '🔒 Chưa mở khóa', cls: 'badge-muted' },
+  planned: { fav: '🕓 Sắp có', cls: 'badge-muted' },
+};
+
 export function missingPrerequisites(lesson: Lesson, progress: UserProgress): string[] {
   return lesson.prerequisites.filter((id) => !isMastered(progress.lessons[id]));
 }

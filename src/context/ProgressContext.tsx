@@ -16,6 +16,8 @@ interface ProgressApi {
   gradeWord(id: string, grade: srs.Grade): void;
   markKnown(id: string): void;
   toggleSaved(id: string): void;
+  /** Bookmark / un-bookmark a lesson. Returns true when it is now saved. Does not touch any other progress. */
+  toggleFavorite(lessonId: string): boolean;
   recordAnswer(q: Question, correct: boolean, userAnswer: string): void;
   resolveMistake(id: string): void;
   removeMistake(id: string): void;
@@ -130,6 +132,16 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
       gradeWord: (id, grade) => update((p) => bump(withWord(p, id, (uv) => srs.gradeWord(uv, grade)), 'words')),
       markKnown: (id) => update((p) => bump(withWord(p, id, srs.markKnown), 'words')),
       toggleSaved: (id) => update((p) => withWord(p, id, (uv) => ({ ...uv, saved: !uv.saved }))),
+      toggleFavorite: (lessonId) => {
+        const saved = !progress.favorites?.[lessonId];
+        // setProgress directly (not update): a bookmark must not count as study activity or trigger rewards.
+        setProgress((p) => {
+          if (!p) return p;
+          const { [lessonId]: _removed, ...rest } = p.favorites ?? {};
+          return { ...p, favorites: saved ? { ...rest, [lessonId]: new Date().toISOString() } : rest };
+        });
+        return saved;
+      },
       recordAnswer: (q, correct, userAnswer) =>
         update((p) => {
           let next = p;

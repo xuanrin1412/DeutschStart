@@ -3,6 +3,8 @@ export interface NavItem {
   label: string;
   icon: string;
   end?: boolean;
+  /** Show the number of saved lessons next to the label. */
+  count?: 'favorites';
 }
 
 export const MAIN_NAV: NavItem[] = [
@@ -14,6 +16,7 @@ export const MAIN_NAV: NavItem[] = [
   { to: '/pronunciation', label: 'Phát âm', icon: '🗣️' },
   { to: '/conversations', label: 'Hội thoại', icon: '💬' },
   { to: '/review', label: 'Ôn tập', icon: '🔁' },
+  { to: '/favorites', label: 'Đã lưu', icon: '⭐', count: 'favorites' },
   { to: '/progress', label: 'Tiến độ', icon: '📈' },
 ];
 
@@ -36,6 +39,7 @@ export const MORE_NAV: NavItem[] = [
   { to: '/articles', label: 'Luyện mạo từ', icon: '🎯' },
   { to: '/quiz', label: 'Quiz', icon: '✅' },
   { to: '/mistakes', label: 'Sổ lỗi sai', icon: '📕' },
+  { to: '/favorites', label: 'Bài đã lưu', icon: '⭐', count: 'favorites' },
   { to: '/progress', label: 'Tiến độ', icon: '📈' },
   { to: '/settings', label: 'Cài đặt & dữ liệu', icon: '⚙️' },
   { to: '/profile', label: 'Tài khoản', icon: '👤' },

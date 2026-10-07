@@ -45,5 +45,6 @@ export function createEmptyProgress(userId: string): UserProgress {
     daily: { date: today(), words: 0, grammar: 0, listening: 0, quiz: 0, pronunciation: 0, rewarded: false },
     studySeconds: 0,
     achievements: {},
+    favorites: {},
   };
 }
