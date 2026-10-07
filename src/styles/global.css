@@ -2216,6 +2216,40 @@ mark.hl {
   font-size: 1.1rem;
   margin: 0;
 }
+/* Word card inside answer feedback: pronunciation + example with audio */
+.fb-word {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.7);
+}
+.fb-word p {
+  margin: 0;
+}
+.fb-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 8px;
+}
+.fb-de {
+  font-size: 1.1rem;
+}
+.fb-example {
+  margin-top: 6px;
+  padding-top: 8px;
+  border-top: 1px dashed var(--line);
+}
+.fb-label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
 .translate-form {
   display: flex;
   flex-direction: column;

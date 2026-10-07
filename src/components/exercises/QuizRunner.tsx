@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import type { Question } from '@/types/models';
-import { isCorrect } from '@/services/quiz';
+import { fullWord, isCorrect } from '@/services/quiz';
+import { useContent } from '@/context/ContentContext';
 import { audioService } from '@/services/audio/audioService';
 import { useProgress } from '@/context/ProgressContext';
 import { useAutoSpeak } from '@/hooks/useAutoSpeak';
@@ -9,6 +10,7 @@ import { AudioButton } from '@/components/ui/AudioButton';
 import { WordImage } from '@/components/ui/WordImage';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { SentenceBuilder } from './SentenceBuilder';
+import { WordFeedback } from './WordFeedback';
 import { EmptyState } from '@/components/ui/States';
 
 interface Props {
@@ -35,6 +37,7 @@ const TYPE_LABEL: Record<Question['type'], string> = {
 
 export function QuizRunner({ questions, record = true, onFinish, onRestart, onAnswered, finishExtra, compact }: Props) {
   const { recordAnswer } = useProgress();
+  const { wordById } = useContent();
   const [index, setIndex] = useState(0);
   const [chosen, setChosen] = useState<string | null>(null);
   const [typed, setTyped] = useState('');
@@ -140,6 +143,9 @@ export function QuizRunner({ questions, record = true, onFinish, onRestart, onAn
   }
 
   const articleWord = q.type === 'article' ? q.display?.replace('___ ', '') : undefined;
+  const word = q.wordId ? wordById.get(q.wordId) : undefined;
+  // The word card already shows the meaning and example, so a plain "word = meaning" explanation would repeat it.
+  const explanation = word && q.explanation && (q.explanation.startsWith(`${fullWord(word)} =`) || q.explanation.startsWith('Bạn vừa nghe:')) ? undefined : q.explanation;
 
   return (
     <div className={`quiz${compact ? ' quiz-compact' : ''}`}>
@@ -261,9 +267,10 @@ export function QuizRunner({ questions, record = true, onFinish, onRestart, onAn
               Đáp án đúng: <strong>{q.answer}</strong>
             </p>
           )}
-          {q.explanation && <p className="muted">{q.explanation}</p>}
+          {word && <WordFeedback word={word} />}
+          {explanation && <p className="muted">{explanation}</p>}
           <div className="row gap-sm wrap center-y">
-            {q.audioText && <AudioButton text={q.type === 'article' ? `${q.answer} ${articleWord}` : q.audioText} size="sm" label="Nghe" variant="pill" />}
+            {q.audioText && !word && <AudioButton text={q.type === 'article' ? `${q.answer} ${articleWord}` : q.audioText} size="sm" label="Nghe" variant="pill" />}
             <button ref={continueRef} className="btn btn-primary" onClick={next}>
               {index + 1 >= questions.length ? 'Xem kết quả' : 'Tiếp tục'} →
             </button>
