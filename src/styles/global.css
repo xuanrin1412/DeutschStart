@@ -710,6 +710,83 @@ mark.hl {
   background: rgba(250, 248, 244, 0.88);
   backdrop-filter: saturate(160%) blur(12px);
   border-bottom: 1px solid var(--line);
+  transition: background-color 0.3s, border-color 0.3s;
+}
+/* Folding the header away (︿ button): rows 1fr → 0fr animates its height; a tab at the top opens it again */
+.header-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: 1fr;
+  transition: grid-template-rows 0.3s ease;
+}
+.header-inner {
+  min-height: 0;
+}
+.header.is-folding .header-inner {
+  overflow: hidden;
+}
+.header.is-collapsed {
+  border-bottom-color: transparent;
+  background: transparent;
+  backdrop-filter: none;
+}
+.header.is-collapsed .header-body {
+  grid-template-rows: 0fr;
+}
+/* Once folded, also out of the tab order and the accessibility tree (after the animation) */
+.header.is-collapsed .header-inner {
+  overflow: hidden;
+  visibility: hidden;
+  transition: visibility 0s 0.3s;
+}
+.header.is-collapsed ~ .main {
+  padding-top: 44px;
+}
+.header-tab {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px 6px;
+  border: 1px solid var(--line);
+  border-top: 0;
+  border-radius: 0 0 12px 12px;
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  color: var(--ink-2);
+  font: inherit;
+  font-size: 0.8rem;
+  font-weight: 700;
+  cursor: pointer;
+  transform: translateX(-50%);
+  animation: header-tab-in 0.3s ease;
+}
+.header-tab:hover {
+  background: var(--gold-soft);
+  color: var(--ink);
+}
+.header-tab:focus-visible {
+  border-radius: 0 0 12px 12px;
+}
+.header-tab .flag-de {
+  margin: 0;
+}
+@keyframes header-tab-in {
+  from {
+    transform: translate(-50%, -100%);
+  }
+}
+.chevron {
+  display: block;
+}
+.chevron.is-down {
+  transform: rotate(180deg);
+}
+.header-tab .chevron {
+  width: 14px;
+  height: 14px;
 }
 .header-top {
   display: flex;
@@ -3307,6 +3384,13 @@ mark.hl {
   }
   .letter-big {
     font-size: 3.4rem;
+  }
+}
+
+/* Phones: the flag alone is the logo, so search, streak, bell, profile and ︿ fit on one row */
+@media (max-width: 420px) {
+  .logo-text {
+    display: none;
   }
 }
 

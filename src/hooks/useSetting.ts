@@ -29,3 +29,6 @@ export const useSpeakOnType = boolSetting('settings.speakOnType', true);
 
 /** "Gõ lại sau khi trả lời": quizzes show the typing drill under the feedback of every answer. */
 export const useDrillInQuiz = boolSetting('settings.drillInQuiz', true);
+
+/** Header folded away with its ︿ button (more room to study); a tab at the top of the screen opens it again. */
+export const useHeaderCollapsed = boolSetting('settings.headerCollapsed', false);

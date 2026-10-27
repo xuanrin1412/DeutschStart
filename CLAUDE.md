@@ -50,6 +50,7 @@ npm run check:content  # dependency rule + practice rounds + dictionary coverage
 **Navigation**
 - On desktop, a header shows the logo, search box, streak, notifications and profile menu, with a 10-item nav bar below it ("Đã lưu" shows the number of saved lessons). Between 900 and 1180px the nav icons are hidden so every item fits.
 - Below 900px, the nav bar is replaced by a bottom bar: 4 items plus a "Thêm" (more) sheet.
+- The ︿ button at the end of the header's top row folds the whole header away (height animates via `grid-template-rows`); a "Hiện menu ▾" tab hanging from the top of the screen opens it again. The choice is remembered (`useHeaderCollapsed` in `hooks/useSetting.ts`). At 420px and below the logo shows only the flag so the row fits.
 
 ## Project structure
 ```

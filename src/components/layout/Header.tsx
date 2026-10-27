@@ -1,10 +1,11 @@
-import { useState, type FormEvent } from 'react';
+import { useEffect, useRef, useState, type FormEvent } from 'react';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { MAIN_NAV } from './nav';
 import { FavoriteCount } from '@/components/lesson/FavoriteStar';
 import { useProgress, isDailyComplete } from '@/context/ProgressContext';
 import { useAuth } from '@/context/AuthContext';
 import { usePopover } from '@/hooks/usePopover';
+import { useHeaderCollapsed } from '@/hooks/useSetting';
 import { dueCount, openMistakes } from '@/services/selectors';
 import { achievements } from '@/data/achievements';
 import { today } from '@/services/srs';
@@ -129,32 +130,78 @@ function ProfileMenu() {
   );
 }
 
+function Chevron({ down }: { down?: boolean }) {
+  return (
+    <svg className={`chevron${down ? ' is-down' : ''}`} width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M6 15l6-6 6 6" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+/** Matches the height transition in global.css (.header-body). */
+const FOLD_MS = 300;
+
 export function Header() {
   const { progress } = useProgress();
+  const [collapsed, setCollapsed] = useHeaderCollapsed();
+  // While the height animates the header clips its content; once open again, popovers may overflow it.
+  const [folding, setFolding] = useState(false);
+  const foldRef = useRef<HTMLButtonElement>(null);
+  const tabRef = useRef<HTMLButtonElement>(null);
+  const timer = useRef<ReturnType<typeof setTimeout>>();
+  useEffect(() => () => clearTimeout(timer.current), []);
+
+  const fold = (next: boolean) => {
+    setFolding(true);
+    setCollapsed(next);
+    clearTimeout(timer.current);
+    timer.current = setTimeout(() => setFolding(false), FOLD_MS + 50);
+    // The pressed button disappears: keep keyboard focus on the one that replaces it.
+    requestAnimationFrame(() => (next ? tabRef : foldRef).current?.focus());
+  };
+
   return (
-    <header className="header">
-      <div className="header-top container">
-        <Logo />
-        <SearchBox />
-        <div className="header-actions">
-          <Link to="/search" className="icon-btn only-mobile" aria-label="Tìm kiếm">
-            🔍
-          </Link>
-          <Link to="/progress" className="streak-pill" aria-label={`Chuỗi học: ${progress.streak.current} ngày`}>
-            🔥 <strong>{progress.streak.current}</strong>
-          </Link>
-          <Notifications />
-          <ProfileMenu />
+    <header className={`header${collapsed ? ' is-collapsed' : ''}${folding ? ' is-folding' : ''}`}>
+      <div className="header-body" id="site-header">
+        <div className="header-inner">
+          <div className="header-top container">
+            <Logo />
+            <SearchBox />
+            <div className="header-actions">
+              <Link to="/search" className="icon-btn only-mobile" aria-label="Tìm kiếm">
+                🔍
+              </Link>
+              <Link to="/progress" className="streak-pill" aria-label={`Chuỗi học: ${progress.streak.current} ngày`}>
+                🔥 <strong>{progress.streak.current}</strong>
+              </Link>
+              <Notifications />
+              <ProfileMenu />
+              <button ref={foldRef} type="button" className="icon-btn header-fold" aria-label="Thu gọn thanh đầu trang" aria-expanded={true} aria-controls="site-header" title="Thu gọn" onClick={() => fold(true)}>
+                <Chevron />
+              </button>
+            </div>
+          </div>
+          <nav className="main-nav container" aria-label="Điều hướng chính">
+            {MAIN_NAV.map((n) => (
+              <NavLink key={n.to} to={n.to} end={n.end} className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
+                <span aria-hidden="true">{n.icon}</span> {n.label}
+                {n.count === 'favorites' && <FavoriteCount />}
+              </NavLink>
+            ))}
+          </nav>
         </div>
       </div>
-      <nav className="main-nav container" aria-label="Điều hướng chính">
-        {MAIN_NAV.map((n) => (
-          <NavLink key={n.to} to={n.to} end={n.end} className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`}>
-            <span aria-hidden="true">{n.icon}</span> {n.label}
-            {n.count === 'favorites' && <FavoriteCount />}
-          </NavLink>
-        ))}
-      </nav>
+      {collapsed && (
+        <button ref={tabRef} type="button" className="header-tab" aria-expanded={false} aria-controls="site-header" onClick={() => fold(false)}>
+          <span className="flag-de" aria-hidden="true">
+            <i />
+            <i />
+            <i />
+          </span>
+          Hiện menu
+          <Chevron down />
+        </button>
+      )}
     </header>
   );
 }
