@@ -276,6 +276,78 @@ function LessonIntro({ lesson, teaches, header, hasWarmup, onStart, onPractice }
 
 /* ---------------- Learn: steps one at a time ---------------- */
 
+const STEP_ICONS: Record<LessonStep['type'], string> = {
+  intro: '🎯',
+  tip: '💡',
+  concept: '📘',
+  words: '🆕',
+  examples: '💬',
+  phrases: '🗣️',
+  letters: '🔤',
+  sounds: '👂',
+  builder: '🧩',
+  quiz: '✅',
+};
+
+function cheer(step: number, total: number) {
+  if (step === total - 1) return total === 1 ? 'Chỉ một bước – xong là tới phần kiểm tra 🏆' : 'Bước cuối rồi – xong là tới phần kiểm tra 🏆';
+  if (step === 0) return 'Bắt đầu nào – từng bước nhỏ một 🚀';
+  if (step >= total / 2) return 'Đã qua một nửa – giữ nhịp nhé 💪';
+  return 'Bạn đang làm rất tốt – tiếp tục nào ✨';
+}
+
+/** The learn part as a path: done steps (✓, click to look back), the current step, then the test 🏆. */
+function LessonPath({ steps, step, go }: { steps: LessonStep[]; step: number; go: (n: number) => void }) {
+  const total = steps.length;
+  return (
+    <nav className="lesson-path" aria-label="Tiến độ bài học">
+      <p className="path-head">
+        <span className="path-count">
+          Bước {step + 1}
+          <small>/{total}</small>
+        </span>
+        <span className="path-cheer">{cheer(step, total)}</span>
+      </p>
+      <ol className="path">
+        {steps.map((s, i) => {
+          const label = `Bước ${i + 1}: ${s.title}`;
+          return (
+            <li key={i} className={i < step ? 'is-done' : i === step ? 'is-current' : ''} aria-current={i === step ? 'step' : undefined}>
+              {i < step ? (
+                <button
+                  type="button"
+                  className="path-node"
+                  onClick={() => {
+                    go(i);
+                    // This button turns into the "current" node: move focus to the step it opened.
+                    requestAnimationFrame(() => document.getElementById('step-title')?.focus({ preventScroll: true }));
+                  }}
+                  title={`${label} – xem lại`} aria-label={`${label} – đã xong, bấm để xem lại`}>
+                  ✓
+                </button>
+              ) : (
+                <span className="path-node" title={label}>
+                  <span aria-hidden="true">{STEP_ICONS[s.type]}</span>
+                  <span className="sr-only">
+                    {label}
+                    {i === step ? ' – đang học' : ''}
+                  </span>
+                </span>
+              )}
+            </li>
+          );
+        })}
+        <li className={`path-goal${step === total - 1 ? ' is-near' : ''}`}>
+          <span className="path-node" title="Luyện tập và kiểm tra">
+            <span aria-hidden="true">🏆</span>
+            <span className="sr-only">Sau cùng: luyện tập và kiểm tra</span>
+          </span>
+        </li>
+      </ol>
+    </nav>
+  );
+}
+
 function LearnSteps({ lesson, steps, step, current, header, lessonNew, go, onDone }: { lesson: Lesson; steps: LessonStep[]; step: number; current: LessonStep; header: ReactNode; lessonNew: Set<string>; go: (n: number) => void; onDone: () => void }) {
   const [stepDone, setStepDone] = useState<Record<number, boolean>>({});
   const total = steps.length;
@@ -286,21 +358,10 @@ function LearnSteps({ lesson, steps, step, current, header, lessonNew, go, onDon
   return (
     <div className="lesson stack-md narrow">
       {header}
-      <p className="small muted">
-        Phần học: bước {step + 1}/{total} · sau đó là luyện tập và kiểm tra
-      </p>
-      <ol className="stepper" aria-label={`Tiến độ bài học: bước ${step + 1} trên ${total}`}>
-        {steps.map((s, i) => (
-          <li key={i} className={i < step ? 'done' : i === step ? 'current' : ''} aria-current={i === step ? 'step' : undefined}>
-            <span className="sr-only">
-              Bước {i + 1}: {s.title}
-            </span>
-          </li>
-        ))}
-      </ol>
+      <LessonPath steps={steps} step={step} go={go} />
 
       <section className="card lesson-step" aria-labelledby="step-title">
-        <h2 id="step-title" className="h3">
+        <h2 id="step-title" className="h3" tabIndex={-1}>
           {current.title}
         </h2>
         <StepBody key={`${lesson.id}-${step}`} step={current} lessonNew={lessonNew} onFinished={() => setStepDone((d) => ({ ...d, [step]: true }))} />

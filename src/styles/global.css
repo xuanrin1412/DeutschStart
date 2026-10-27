@@ -1329,24 +1329,156 @@ mark.hl {
   background: var(--surface-2);
   box-shadow: none;
 }
-.stepper {
+/* Lesson path: one node per learn step, joined by a track that fills green, ending at the test 🏆 */
+.lesson-path {
+  --node: 38px;
+  padding: 14px 16px 16px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: linear-gradient(120deg, var(--gold-soft) 0%, var(--surface) 55%, var(--good-soft) 100%);
+  box-shadow: var(--shadow-sm);
+}
+.path-head {
   display: flex;
-  gap: 6px;
-  list-style: none;
-  padding: 0;
-  margin: 10px 0 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  margin: 0 0 14px;
 }
-.stepper li {
-  flex: 1;
-  height: 5px;
+.path-count {
+  padding: 3px 11px;
   border-radius: 999px;
-  background: var(--surface-3);
+  background: var(--ink);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 800;
+  white-space: nowrap;
 }
-.stepper li.done {
+.path-count small {
+  font-size: inherit;
+  font-weight: 600;
+  opacity: 0.65;
+}
+.path-cheer {
+  color: var(--ink-2);
+  font-size: 0.92rem;
+  font-weight: 600;
+}
+.path {
+  display: flex;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.path li {
+  position: relative;
+  flex: 1;
+  display: flex;
+  justify-content: center;
+}
+/* Track to the next node: dashed grey, with a green fill that grows when the step is done */
+.path li:not(:last-child)::before,
+.path li:not(:last-child)::after {
+  content: '';
+  position: absolute;
+  top: calc(var(--node) / 2 - 2px);
+  left: calc(50% + var(--node) / 2 + 3px);
+  right: calc(-50% + var(--node) / 2 + 3px);
+  height: 4px;
+  border-radius: 999px;
+}
+.path li:not(:last-child)::before {
+  background: repeating-linear-gradient(90deg, var(--surface-3) 0 7px, transparent 7px 11px);
+}
+.path li:not(:last-child)::after {
   background: var(--good);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.5s ease;
 }
-.stepper li.current {
-  background: var(--flag-gold);
+.path li.is-done::after {
+  transform: scaleX(1);
+}
+.path-node {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: var(--node);
+  height: var(--node);
+  padding: 0;
+  border: 2px solid var(--line);
+  border-radius: 50%;
+  background: var(--surface);
+  color: var(--muted);
+  font: inherit;
+  font-size: 1.05rem;
+  line-height: 1;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.path-node:focus-visible {
+  border-radius: 50%;
+}
+.path li:not(.is-done):not(.is-current):not(.is-near) .path-node > [aria-hidden] {
+  filter: grayscale(1);
+  opacity: 0.45;
+}
+.path li.is-done .path-node {
+  border-color: var(--good);
+  background: var(--good);
+  color: #fff;
+  font-weight: 800;
+  cursor: pointer;
+  animation: path-done 0.4s ease;
+}
+.path li.is-done .path-node:hover {
+  transform: scale(1.1);
+}
+.path li.is-current .path-node {
+  border-color: var(--flag-gold);
+  background: var(--gold-soft);
+  transform: scale(1.15);
+  animation: path-glow 2.4s ease-in-out infinite;
+}
+.path-goal .path-node {
+  border-style: dashed;
+}
+/* Last step: the trophy is within reach */
+.path-goal.is-near .path-node {
+  border-style: solid;
+  border-color: var(--flag-gold);
+  animation: path-bob 2.4s ease-in-out infinite;
+}
+@keyframes path-bob {
+  50% {
+    transform: translateY(-3px);
+  }
+}
+@keyframes path-done {
+  from {
+    transform: scale(0.6);
+  }
+  60% {
+    transform: scale(1.15);
+  }
+}
+@keyframes path-glow {
+  0%,
+  100% {
+    box-shadow: 0 0 0 4px rgba(242, 183, 5, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 0 9px rgba(242, 183, 5, 0.08);
+  }
+}
+@media (max-width: 480px) {
+  .lesson-path {
+    --node: 32px;
+    padding: 12px 12px 14px;
+  }
+  .path-node {
+    font-size: 0.92rem;
+  }
 }
 .lesson-text {
   font-size: 1.05rem;
