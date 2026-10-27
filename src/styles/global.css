@@ -2271,6 +2271,67 @@ mark.hl {
   letter-spacing: 0.04em;
 }
 
+/* Typing drill: retype a new word – copy it, then from memory */
+.type-drill {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+.type-drill .h4,
+.type-drill p {
+  margin: 0;
+}
+.type-drill.is-off {
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 14px;
+}
+.drill-pips {
+  display: flex;
+  gap: 6px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.drill-pips li {
+  width: 14px;
+  height: 14px;
+  border: 2px solid var(--muted);
+  border-radius: 50%;
+  transition: background-color 0.2s, border-color 0.2s;
+}
+.drill-pips li.is-memory {
+  border-style: dashed;
+}
+.drill-pips li.is-done {
+  background: var(--good);
+  border-color: var(--good);
+}
+.drill-model {
+  font-size: 1.2rem;
+}
+.drill-foot {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+.drill-feedback {
+  flex: 1 1 220px;
+  font-weight: 600;
+}
+.drill-feedback.is-good {
+  color: var(--good);
+}
+.drill-feedback.is-bad {
+  color: var(--bad);
+}
+
 /* Vocabulary practice: settings as checkbox cards */
 .option-group {
   margin: 0;

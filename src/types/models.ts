@@ -443,6 +443,8 @@ export interface UserProgress {
   readings?: Record<string, { bestScore: number }>;
   /** Bookmarked lessons: lesson id → ISO date it was saved. Only a bookmark – never changes progress. */
   favorites?: Record<string, string>;
+  /** Words the learner no longer wants to retype: lexeme id → ISO date. A practice preference – never changes progress. */
+  typingSkipped?: Record<string, string>;
   /** Accuracy per skill across the whole site – drives adaptive review. Optional for older saved progress. */
   skillStats?: Partial<Record<Skill, ScoreStat>>;
   mistakes: Record<string, Mistake>;

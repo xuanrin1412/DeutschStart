@@ -11,6 +11,7 @@ import { useSpeakOnShow } from '@/hooks/useAutoSpeak';
 import { WordImage } from '@/components/ui/WordImage';
 import { GermanWord, Ipa } from '@/components/ui/GermanWord';
 import { GermanText } from '@/components/text/GermanText';
+import { TypeDrill } from '@/components/exercises/TypeDrill';
 import { WordAnatomy, whyArticle } from '@/components/lesson/WordAnatomy';
 
 /**
@@ -130,6 +131,8 @@ export function VocabCard({ word }: { word: Vocabulary }) {
           </p>
         </div>
       )}
+
+      <TypeDrill id={word.id} lemma={text} meaning={word.meaning} />
 
       <div className="vocab-actions">
         <AudioButton text={text} label="Nghe" variant="pill" />

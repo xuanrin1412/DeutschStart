@@ -203,6 +203,7 @@ function sanitize(data: Record<string, unknown>, userId: string): UserProgress {
     grammarLessons: record(data.grammarLessons, (v) => ({ completed: v.completed === true, bestScore: Math.min(100, num(v.bestScore)) })),
     readings: record(data.readings, (v) => ({ bestScore: Math.min(100, num(v.bestScore)) })),
     favorites: isObj(data.favorites) ? (Object.fromEntries(Object.entries(data.favorites).filter(([, v]) => typeof v === 'string')) as Record<string, string>) : {},
+    typingSkipped: isObj(data.typingSkipped) ? (Object.fromEntries(Object.entries(data.typingSkipped).filter(([, v]) => typeof v === 'string')) as Record<string, string>) : {},
     alphabetSeen: Array.isArray(data.alphabetSeen) ? data.alphabetSeen.filter((s): s is string => typeof s === 'string') : [],
     currentLessonId: typeof data.currentLessonId === 'string' ? data.currentLessonId : undefined,
     streak: { current: num(streak.current), longest: Math.max(num(streak.longest), num(streak.current)), lastDate: typeof streak.lastDate === 'string' ? streak.lastDate : undefined },
@@ -323,6 +324,7 @@ export function mergeProgress(current: UserProgress, imported: UserProgress, les
     grammarLessons: mergeRecords(current.grammarLessons, imported.grammarLessons, (a, b) => ({ completed: a.completed || b.completed, bestScore: Math.max(a.bestScore, b.bestScore) })),
     readings: mergeRecords(current.readings ?? {}, imported.readings ?? {}, (a, b) => ({ bestScore: Math.max(a.bestScore, b.bestScore) })),
     favorites: mergeRecords(current.favorites ?? {}, imported.favorites ?? {}, (a, b) => (a < b ? a : b)),
+    typingSkipped: mergeRecords(current.typingSkipped ?? {}, imported.typingSkipped ?? {}, (a, b) => (a < b ? a : b)),
     mistakes: mergeRecords(current.mistakes, imported.mistakes, (a, b) => {
       const newer = b.lastAt > a.lastAt ? b : a;
       return { ...newer, count: Math.max(a.count, b.count) };

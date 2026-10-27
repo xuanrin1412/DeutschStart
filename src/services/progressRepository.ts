@@ -46,5 +46,6 @@ export function createEmptyProgress(userId: string): UserProgress {
     studySeconds: 0,
     achievements: {},
     favorites: {},
+    typingSkipped: {},
   };
 }

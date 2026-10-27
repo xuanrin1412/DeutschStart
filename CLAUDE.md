@@ -52,7 +52,6 @@ npm run check:content  # dependency rule + practice rounds + dictionary coverage
 - Below 900px, the nav bar is replaced by a bottom bar: 4 items plus a "Thêm" (more) sheet.
 
 ## Project structure
-
 ```
 index.html                 # Loads the Be Vietnam Pro font; lang="vi"
 scripts/check-content.mts  # `npm run check:content`
@@ -120,6 +119,7 @@ The path alias `@/` maps to `src/`; it is configured in both `tsconfig.json` and
   - The provided functions are `learnWord`, `gradeWord`, `markKnown`, `toggleSaved`, `recordAnswer`, `recordPronunciation`, `updateLesson`, `completeLesson` (best skill scores + mastered), `completeGrammarLesson` and a few more.
   - Every update runs `normalizeForToday` first: it resets the daily challenge on a new day and resets the streak to 0 if a day was missed.
   - Every update then runs `applyRewards`: completing the daily challenge adds 1 to the streak, and newly earned achievements are unlocked. An effect shows the toasts and saves.
+- **Typing drill** (`components/exercises/TypeDrill.tsx`, "Gõ lại từ mới") sits at the bottom of every new-word card (`TeachWord` in lessons, `VocabCard` on the word page): type the word 5 times – 3 copies, then 2 from memory. Case and ä/ö/ü/ß must be exact. "Không cần gõ lại từ này" stores the lexeme id in `progress.typingSkipped` via `setTypingSkipped` (`setProgress` directly, like favorites); backups restore and merge it. The drill never blocks moving on.
 - **Favorites** are `progress.favorites` (lesson id → ISO date saved). `toggleFavorite` writes them with `setProgress` directly, not `update`, so a bookmark is never study activity: no rewards, no streak, no unlocking. They are exported, restored and merged (union, earliest date) by `backup.ts`.
 - **`recordAnswer(question, correct, userAnswer)` is the single entry point for exercise results.** It:
   - updates per-skill stats (`skillStats`, used for adaptive practice) and per-article stats;

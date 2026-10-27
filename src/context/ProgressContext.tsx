@@ -18,6 +18,8 @@ interface ProgressApi {
   toggleSaved(id: string): void;
   /** Bookmark / un-bookmark a lesson. Returns true when it is now saved. Does not touch any other progress. */
   toggleFavorite(lessonId: string): boolean;
+  /** Turn the "retype the new word" drill off (or back on) for one word. Does not touch any other progress. */
+  setTypingSkipped(id: string, skipped: boolean): void;
   recordAnswer(q: Question, correct: boolean, userAnswer: string): void;
   resolveMistake(id: string): void;
   removeMistake(id: string): void;
@@ -142,6 +144,13 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
         });
         return saved;
       },
+      setTypingSkipped: (id, skipped) =>
+        // Like toggleFavorite: a practice preference, not study activity.
+        setProgress((p) => {
+          if (!p) return p;
+          const { [id]: _removed, ...rest } = p.typingSkipped ?? {};
+          return { ...p, typingSkipped: skipped ? { ...rest, [id]: new Date().toISOString() } : rest };
+        }),
       recordAnswer: (q, correct, userAnswer) =>
         update((p) => {
           let next = p;

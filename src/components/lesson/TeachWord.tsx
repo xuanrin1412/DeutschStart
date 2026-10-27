@@ -6,6 +6,7 @@ import { AudioButton } from '@/components/ui/AudioButton';
 import { WordImage } from '@/components/ui/WordImage';
 import { GermanWord, Ipa } from '@/components/ui/GermanWord';
 import { GermanText } from '@/components/text/GermanText';
+import { TypeDrill } from '@/components/exercises/TypeDrill';
 import { WordAnatomy, whyArticle } from './WordAnatomy';
 
 /** A lesson example sentence: German (every word clickable), audio, translation and note. */
@@ -46,6 +47,7 @@ export function TeachWord({ id, example, lessonNew }: { id: string; example?: Le
         <p className="teach-meaning">{lex.meaning}</p>
         {lex.explanation && <p className="teach-explain">💡 {lex.explanation}</p>}
         {example && <ExampleLine example={example} lessonNew={lessonNew} />}
+        <TypeDrill id={lex.id} lemma={lex.lemma} meaning={lex.meaning} />
       </article>
     );
   }
@@ -91,6 +93,7 @@ export function TeachWord({ id, example, lessonNew }: { id: string; example?: Le
 
       {w.article && <p className="teach-explain">❓ <strong>Vì sao là "{w.article}"?</strong> {whyArticle(w)}</p>}
       {example && <ExampleLine example={example} lessonNew={lessonNew} />}
+      <TypeDrill id={w.id} lemma={text} meaning={w.meaning} />
     </article>
   );
 }
