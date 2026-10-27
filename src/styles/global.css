@@ -2271,7 +2271,7 @@ mark.hl {
   letter-spacing: 0.04em;
 }
 
-/* Typing drill: retype a new word – copy it, then from memory */
+/* Typing drill: retype a word or sentence – copy it, then from memory */
 .type-drill {
   display: flex;
   flex-direction: column;
@@ -2283,6 +2283,41 @@ mark.hl {
 .type-drill .h4,
 .type-drill p {
   margin: 0;
+}
+/* Inside a grey example / phrase box, or under quiz feedback */
+.example .type-drill,
+.phrase .type-drill {
+  margin-top: 10px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+}
+.type-drill.in-quiz,
+.builder .type-drill,
+.feedback + .drill-open,
+.feedback + .type-drill {
+  margin-top: 12px;
+}
+.drill-open {
+  align-self: flex-start;
+}
+.example .drill-open,
+.phrase .drill-open {
+  margin-top: 8px;
+}
+.drill-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 14px;
+}
+.drill-head .h4 {
+  margin-right: auto;
+}
+.drill-prompt .audio-btn {
+  vertical-align: middle;
+}
+.drill-model.is-sentence {
+  font-size: 1.05rem;
 }
 .type-drill.is-off {
   flex-direction: row;

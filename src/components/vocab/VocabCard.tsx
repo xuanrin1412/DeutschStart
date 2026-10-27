@@ -117,6 +117,7 @@ export function VocabCard({ word }: { word: Vocabulary }) {
         <p className="muted small">
           Bấm vào từng từ để xem nghĩa. Từ <span className="gt-word gt-unknown">tô cam</span> là từ bạn chưa học.
         </p>
+        <TypeDrill text={word.example} meaning={word.exampleVi} kind="sentence" />
       </div>
 
       {related.length > 0 && (
@@ -132,7 +133,7 @@ export function VocabCard({ word }: { word: Vocabulary }) {
         </div>
       )}
 
-      <TypeDrill id={word.id} lemma={text} meaning={word.meaning} />
+      <TypeDrill text={text} url={word.audio?.url} meaning={word.meaning} kind="word" skipId={word.id} />
 
       <div className="vocab-actions">
         <AudioButton text={text} label="Nghe" variant="pill" />

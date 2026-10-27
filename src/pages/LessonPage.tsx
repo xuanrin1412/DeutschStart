@@ -13,6 +13,7 @@ import { LetterCard, LetterTile } from '@/components/alphabet/LetterCard';
 import { SoundCard } from '@/components/pronunciation/SoundCard';
 import { SentenceSet } from '@/components/exercises/SentenceSet';
 import { QuizRunner } from '@/components/exercises/QuizRunner';
+import { TypeDrill } from '@/components/exercises/TypeDrill';
 import { GermanText } from '@/components/text/GermanText';
 import { FavoriteStar } from '@/components/lesson/FavoriteStar';
 import { ExampleLine, TeachWord, TermCard } from '@/components/lesson/TeachWord';
@@ -446,6 +447,7 @@ function StepBody({ step, lessonNew, onFinished }: { step: LessonStep; lessonNew
                 {p.ipa && <Ipa>{p.ipa}</Ipa>}
                 <p className="phrase-vi">{p.vi}</p>
                 {p.note && <p className="muted small">💬 {p.note}</p>}
+                <TypeDrill text={p.de} meaning={p.vi} onDemand />
               </div>
               <div className="row gap-xs">
                 <AudioButton text={p.de.replace(' – ', ', ')} size="sm" />

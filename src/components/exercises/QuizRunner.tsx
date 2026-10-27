@@ -11,6 +11,8 @@ import { WordImage } from '@/components/ui/WordImage';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { SentenceBuilder } from './SentenceBuilder';
 import { WordFeedback } from './WordFeedback';
+import { TypeDrill, quizDrill } from './TypeDrill';
+import { useDrillInQuiz } from '@/hooks/useSetting';
 import { EmptyState } from '@/components/ui/States';
 
 interface Props {
@@ -47,6 +49,7 @@ export function QuizRunner({ questions, record = true, onFinish, onRestart, onAn
   const [showHint, setShowHint] = useState(false);
   const continueRef = useRef<HTMLButtonElement>(null);
   const [autoSpeak] = useAutoSpeak();
+  const [drillOn] = useDrillInQuiz();
 
   const q = questions[index];
   const listening = !!q && (q.type === 'listening' || (q.category === 'listening' && (q.type === 'fill-blank' || q.type === 'typing')));
@@ -146,6 +149,7 @@ export function QuizRunner({ questions, record = true, onFinish, onRestart, onAn
   const word = q.wordId ? wordById.get(q.wordId) : undefined;
   // The word card already shows the meaning and example, so a plain "word = meaning" explanation would repeat it.
   const explanation = word && q.explanation && (q.explanation.startsWith(`${fullWord(word)} =`) || q.explanation.startsWith('Bạn vừa nghe:')) ? undefined : q.explanation;
+  const drill = drillOn ? quizDrill(q, word) : null;
 
   return (
     <div className={`quiz${compact ? ' quiz-compact' : ''}`}>
@@ -243,7 +247,7 @@ export function QuizRunner({ questions, record = true, onFinish, onRestart, onAn
         )}
 
         {q.type === 'ordering' && q.tokens && (
-          <SentenceBuilder key={q.id} tokens={q.tokens} vi={q.display ?? ''} punctuation={q.answer.slice(-1).match(/[.?!]/) ? q.answer.slice(-1) : '.'} alternatives={q.accepted} structure={q.explanation} onResult={(ok, a) => answer(a, ok)} onContinue={next} continueLabel={index + 1 >= questions.length ? 'Xem kết quả' : 'Tiếp tục'} />
+          <SentenceBuilder key={q.id} tokens={q.tokens} vi={q.display ?? ''} punctuation={q.answer.slice(-1).match(/[.?!]/) ? q.answer.slice(-1) : '.'} alternatives={q.accepted} structure={q.explanation} onResult={(ok, a) => answer(a, ok)} onContinue={next} retype={drillOn} continueLabel={index + 1 >= questions.length ? 'Xem kết quả' : 'Tiếp tục'} />
         )}
       </div>
 
@@ -277,6 +281,9 @@ export function QuizRunner({ questions, record = true, onFinish, onRestart, onAn
           </div>
         </div>
       )}
+
+      {/* After the feedback, not inside it: the feedback is a live region and the drill has its own. */}
+      {result !== null && q.type !== 'ordering' && drill && <TypeDrill key={index} {...drill} inQuiz onContinue={next} onExit={() => requestAnimationFrame(() => continueRef.current?.focus())} />}
     </div>
   );
 }

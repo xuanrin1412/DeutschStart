@@ -1,33 +1,13 @@
-import { useEffect, useSyncExternalStore } from 'react';
+import { useEffect } from 'react';
 import type { AudioRef } from '@/types/models';
-import { storage } from '@/services/storage';
 import { audioService } from '@/services/audio/audioService';
+import { boolSetting } from './useSetting';
 
 /**
  * "Tự động phát âm" setting: when on, a word is spoken as soon as it is shown.
  * One shared value (saved in localStorage) so every switch and page stays in sync.
  */
-const KEY = 'settings.autoSpeak';
-const listeners = new Set<() => void>();
-let enabled = storage.get<boolean>(KEY, false);
-
-function setAutoSpeak(on: boolean) {
-  enabled = on;
-  storage.set(KEY, on);
-  listeners.forEach((l) => l());
-}
-
-const subscribe = (cb: () => void) => {
-  listeners.add(cb);
-  return () => {
-    listeners.delete(cb);
-  };
-};
-
-export function useAutoSpeak() {
-  const on = useSyncExternalStore(subscribe, () => enabled);
-  return [on, setAutoSpeak] as const;
-}
+export const useAutoSpeak = boolSetting('settings.autoSpeak', false);
 
 /**
  * Speaks `audio` whenever `showKey` changes (a new word is shown) while auto-speak is on.

@@ -3,6 +3,7 @@ import type { SentenceToken } from '@/types/models';
 import { ROLE_LABELS } from '@/constants';
 import { normalizeAnswer, shuffle } from '@/services/quiz';
 import { AudioButton } from '@/components/ui/AudioButton';
+import { TypeDrill } from './TypeDrill';
 
 interface Props {
   tokens: SentenceToken[]; // correct order
@@ -14,6 +15,8 @@ interface Props {
   /** Called when the learner presses "Tiếp tục" after a result. */
   onContinue?: () => void;
   continueLabel?: string;
+  /** Offer "⌨️ Gõ lại câu này" under the result (default true). */
+  retype?: boolean;
 }
 
 interface Tile {
@@ -21,7 +24,7 @@ interface Tile {
   token: SentenceToken;
 }
 
-export function SentenceBuilder({ tokens, punctuation = '.', vi, structure, alternatives = [], onResult, onContinue, continueLabel = 'Tiếp tục' }: Props) {
+export function SentenceBuilder({ tokens, punctuation = '.', vi, structure, alternatives = [], onResult, onContinue, continueLabel = 'Tiếp tục', retype = true }: Props) {
   const tiles = useMemo<Tile[]>(() => {
     const base = tokens.map((token, id) => ({ id, token }));
     let s = shuffle(base);
@@ -159,6 +162,7 @@ export function SentenceBuilder({ tokens, punctuation = '.', vi, structure, alte
           </div>
         </div>
       )}
+      {result !== null && retype && <TypeDrill text={correctText} meaning={vi} kind="sentence" />}
     </div>
   );
 }

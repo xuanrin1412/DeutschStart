@@ -5,7 +5,7 @@ import { useProgress } from '@/context/ProgressContext';
 import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { PageHeader } from '@/components/common/PageHeader';
-import { AutoSpeakSwitch } from '@/components/ui/AutoSpeakSwitch';
+import { AutoSpeakSwitch, DrillInQuizSwitch, SpeakOnTypeSwitch } from '@/components/ui/AutoSpeakSwitch';
 import { useAutoSpeak } from '@/hooks/useAutoSpeak';
 import { ProgressBar } from '@/components/ui/ProgressBar';
 import { a1Progress, currentLevel } from '@/services/selectors';
@@ -48,6 +48,10 @@ export default function SettingsPage() {
         </h2>
         <AutoSpeakSwitch />
         <p className="muted small">Tự động đọc từ tiếng Đức khi từ xuất hiện (thẻ từ, flashcard, luyện từ vựng).</p>
+        <SpeakOnTypeSwitch />
+        <p className="muted small">Trong phần “Gõ lại”: đọc to từ hoặc câu mỗi lần bạn gõ đúng.</p>
+        <DrillInQuizSwitch />
+        <p className="muted small">Sau mỗi câu hỏi luyện tập và kiểm tra: hiện phần gõ lại từ (hoặc câu) của đáp án. Từ nào đã bấm “Không cần gõ lại” sẽ không hiện.</p>
       </section>
 
       <section className="card stack-md" aria-labelledby="data">

@@ -20,6 +20,7 @@ export function ExampleLine({ example, lessonNew }: { example: LessonExample; le
       </div>
       <p className="example-vi">{example.vi}</p>
       {example.note && <p className="muted small">💬 {example.note}</p>}
+      <TypeDrill text={example.de} meaning={example.vi} kind="sentence" />
     </div>
   );
 }
@@ -47,7 +48,7 @@ export function TeachWord({ id, example, lessonNew }: { id: string; example?: Le
         <p className="teach-meaning">{lex.meaning}</p>
         {lex.explanation && <p className="teach-explain">💡 {lex.explanation}</p>}
         {example && <ExampleLine example={example} lessonNew={lessonNew} />}
-        <TypeDrill id={lex.id} lemma={lex.lemma} meaning={lex.meaning} />
+        <TypeDrill text={lex.lemma} meaning={lex.meaning} kind="word" />
       </article>
     );
   }
@@ -93,7 +94,7 @@ export function TeachWord({ id, example, lessonNew }: { id: string; example?: Le
 
       {w.article && <p className="teach-explain">❓ <strong>Vì sao là "{w.article}"?</strong> {whyArticle(w)}</p>}
       {example && <ExampleLine example={example} lessonNew={lessonNew} />}
-      <TypeDrill id={w.id} lemma={text} meaning={w.meaning} />
+      <TypeDrill text={text} url={w.audio?.url} meaning={w.meaning} kind="word" skipId={w.id} />
     </article>
   );
 }
