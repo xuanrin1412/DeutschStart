@@ -25,7 +25,7 @@ function typingTarget(text: string, kind: Kind): string | null {
   return kind === 'word' && /\/|-$/.test(t) ? null : t;
 }
 
-/** Spacing, punctuation and typographic quotes never count as mistakes; case and ä/ö/ü/ß do. */
+/** Spacing, punctuation and typographic quotes never count as mistakes; ä/ö/ü/ß do. Wrong case passes with a reminder. */
 const words = (s: string) =>
   s
     .replace(/[’`´]/g, "'")
@@ -33,15 +33,25 @@ const words = (s: string) =>
     .split(/\s+/)
     .filter((w) => w && w !== '-');
 
-function check(typed: string, target: string): { ok: boolean; text: string } {
+interface Feedback {
+  ok: boolean;
+  text: string;
+  /** Accepted, but with wrong capitals: which words to write differently next time. */
+  note?: string;
+}
+
+function check(typed: string, target: string): Feedback {
   const got = words(typed);
   const want = words(target);
-  const i = want.findIndex((w, k) => got[k] !== w);
-  if (i === -1) return got.length === want.length ? { ok: true, text: '' } : { ok: false, text: `Thừa: “${got.slice(want.length).join(' ')}”.` };
+  const i = want.findIndex((w, k) => got[k]?.toLowerCase() !== w.toLowerCase());
+  if (i === -1) {
+    if (got.length !== want.length) return { ok: false, text: `Thừa: “${got.slice(want.length).join(' ')}”.` };
+    const cased = want.flatMap((w, k) => (got[k] === w ? [] : [`“${got[k]}” → “${w}”`]));
+    return { ok: true, text: '', note: cased.length ? `Lần sau chú ý chữ hoa – chữ thường: ${cased.join(', ')}.` : undefined };
+  }
   if (got[i] === undefined) return { ok: false, text: `Còn thiếu: “${want.slice(i).join(' ')}”.` };
   const where = want.length > 1 ? `Từ thứ ${i + 1}` : 'Từ này';
   const diff = `“${got[i]}” → “${want[i]}”`;
-  if (got[i].toLowerCase() === want[i].toLowerCase()) return { ok: false, text: `Gần đúng! ${where}: chú ý chữ hoa – chữ thường (${diff}).` };
   if (normalizeAnswer(got[i]) === normalizeAnswer(want[i])) return { ok: false, text: `Gần đúng! ${where}: hãy gõ đúng chữ ä ö ü ß (${diff}) – bấm các nút bên dưới.` };
   return { ok: false, text: `${where} chưa đúng: ${diff}.` };
 }
@@ -95,7 +105,7 @@ export function TypeDrill({ text, url, meaning, kind = isSentence(text) ? 'sente
   const [open, setOpen] = useState(!onDemand);
   const [count, setCount] = useState(0);
   const [value, setValue] = useState('');
-  const [feedback, setFeedback] = useState<{ ok: boolean; text: string } | null>(null);
+  const [feedback, setFeedback] = useState<Feedback | null>(null);
   const [peek, setPeek] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
   const actionRef = useRef<HTMLButtonElement>(null);
@@ -193,7 +203,11 @@ export function TypeDrill({ text, url, meaning, kind = isSentence(text) ? 'sente
       if (onExit) onExit();
       else moveFocus.current = true;
     }
-    setFeedback({ ok: true, text: n >= repeats ? '' : fromMemoryRounds && n === repeats - fromMemoryRounds ? `✓ Đúng rồi! (${n}/${repeats}) Giờ thử gõ theo trí nhớ.` : `✓ Đúng rồi! (${n}/${repeats})` });
+    setFeedback({
+      ok: true,
+      text: n >= repeats ? '' : fromMemoryRounds && n === repeats - fromMemoryRounds ? `✓ Đúng rồi! (${n}/${repeats}) Giờ thử gõ theo trí nhớ.` : `✓ Đúng rồi! (${n}/${repeats})`,
+      note: result.note,
+    });
   };
 
   return (
@@ -298,6 +312,7 @@ export function TypeDrill({ text, url, meaning, kind = isSentence(text) ? 'sente
           ) : (
             feedback?.text
           )}
+          {feedback?.note && <span className="drill-note">⚠️ {feedback.note}</span>}
         </p>
         {done && (
           <button

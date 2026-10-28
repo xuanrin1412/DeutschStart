@@ -2575,6 +2575,11 @@ mark.hl {
 .drill-feedback.is-bad {
   color: var(--bad);
 }
+.drill-note {
+  display: block;
+  color: var(--warn);
+  font-weight: 500;
+}
 
 /* Vocabulary practice: settings as checkbox cards */
 .option-group {
